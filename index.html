@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PPL Log">
+<meta name="theme-color" content="#0f1115">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<title>PPL Log</title>
+<style>
+:root{
+  --bg:#0f1115; --card:#191c22; --card2:#22262e; --line:#2c313a;
+  --text:#f2f3f5; --muted:#8b919c; --ok:#3ddc84; --danger:#ff5d5d;
+  --push:#ff7a3d; --pull:#3fa7ff; --leg:#3ddc84; --accent:var(--push);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 96px);touch-action:manipulation;-webkit-user-select:none;user-select:none;min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:var(--card2);border-radius:12px;padding:12px 16px;cursor:pointer}
+button:active{opacity:.7}
+button:disabled{opacity:.3}
+button.primary{background:var(--accent);color:#111;font-weight:700}
+button.ghost{background:transparent;color:var(--muted);padding:8px 4px}
+button.danger{background:transparent;color:var(--danger)}
+h1{font-size:28px;line-height:1.15;margin:12px 0 4px}
+h2{font-size:20px;margin:20px 0 8px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin:10px 0}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.big{display:block;width:100%;text-align:left;padding:20px;margin:12px 0;border-radius:20px;background:var(--card);border-left:6px solid var(--c)}
+.big b{display:block;font-size:30px;letter-spacing:1px;color:var(--c)}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--c,var(--accent));color:#111;vertical-align:middle}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.exitem{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px;margin:8px 0;background:var(--card);border-radius:16px}
+.exitem svg{width:72px;height:70px;flex:none;background:var(--card2);border-radius:12px}
+.exitem .name{font-weight:600}
+.done-mark{color:var(--ok);font-weight:700;white-space:nowrap}
+svg.fig .floor{stroke:var(--line);stroke-width:1.5}
+svg.fig .prop{stroke:var(--muted);stroke-width:2;fill:none}
+svg.fig .prop rect{fill:var(--line)}
+svg.fig path,svg.fig line.torso{stroke:var(--text);stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+svg.fig .back{opacity:.4}
+svg.fig circle.head{fill:var(--text)}
+svg.fig .db{fill:var(--bg);stroke:var(--accent);stroke-width:2.4}
+.hero{width:100%;height:auto;max-height:230px;background:var(--card);border-radius:20px;display:block}
+.cue{background:var(--card);border-radius:14px;padding:12px 14px;margin:10px 0;color:#d6d9de}
+.wheel-wrap{position:relative;height:120px;border-radius:12px;background:var(--card2)}
+.wheel-wrap::before{content:"";position:absolute;left:4px;right:4px;top:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.07);pointer-events:none}
+.wheel{height:120px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent)}
+.wheel::-webkit-scrollbar{display:none}
+.wheel .pad{height:40px}
+.wheel .it{height:40px;line-height:40px;text-align:center;font-size:22px;color:var(--muted);scroll-snap-align:center;font-variant-numeric:tabular-nums}
+.wheel .it.sel{color:var(--text);font-weight:700}
+.setrow{display:grid;grid-template-columns:48px 1fr 1fr 56px;gap:8px;align-items:center;margin:8px 0}
+.setrow.bw{grid-template-columns:48px 1fr 56px}
+.setrow .lbl{font-weight:700;color:var(--muted);font-size:14px;text-align:center}
+.tick{height:56px;width:56px;padding:0;font-size:26px;border-radius:14px;background:var(--card2);color:var(--muted)}
+.tick.on{background:var(--ok);color:#111}
+.colhead{display:grid;grid-template-columns:48px 1fr 1fr 56px;gap:8px;font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+.colhead.bw{grid-template-columns:48px 1fr 56px}
+.setcount{display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(20,22,27,.96);border-top:1px solid var(--line);padding:6px 6px calc(env(safe-area-inset-bottom) + 6px);z-index:5}
+nav button{flex:1;background:transparent;font-size:12px;color:var(--muted);padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:22px;line-height:1}
+nav button.on{color:var(--text)}
+#rest{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 76px);background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:10px 12px;display:none;align-items:center;gap:10px;z-index:6;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#rest.show{display:flex}
+#rest .t{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;flex:1}
+#rest button{padding:10px 12px}
+body.noNav #rest{bottom:calc(env(safe-area-inset-bottom) + 12px)}
+#toast{position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top) + 10px);background:var(--ok);color:#111;font-weight:700;border-radius:14px;padding:14px;text-align:center;z-index:9;display:none}
+#toast.show{display:block}
+textarea,select,input[type=text]{width:100%;font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;-webkit-user-select:text;user-select:text}
+textarea{min-height:70px;resize:vertical}
+.seg{display:flex;background:var(--card2);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;padding:9px 0;background:transparent;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--text);font-weight:700}
+.list-edit .row{background:var(--card);border-radius:12px;padding:8px 10px;margin:6px 0}
+.list-edit button{padding:8px 11px}
+details{background:var(--card);border-radius:14px;margin:8px 0;padding:12px 14px}
+details summary{list-style:none;cursor:pointer}
+details summary::-webkit-details-marker{display:none}
+.chart{width:100%;height:180px;background:var(--card);border-radius:16px}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2.5}
+.chart .dot{fill:var(--accent)}
+.chart text{fill:var(--muted);font-size:10px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stat div{background:var(--card);border-radius:14px;padding:12px 4px}
+.stat b{display:block;font-size:24px}
+.pr{background:rgba(61,220,132,.12);border:1px solid var(--ok);border-radius:14px;padding:10px 12px;margin:6px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="rest"><div class="grow"><div class="small muted">Istirahat</div><div class="t" id="restT">1:30</div></div>
+  <button id="restPlus">+15 dtk</button><button id="restSkip">Lewati</button></div>
+<div id="toast"></div>
+<nav id="nav"></nav>
+<script>
+'use strict';
+const KEY = 'ppllog-v1';
+const TYPES = {
+  push: {name: 'PUSH', sub: 'Dada · Bahu · Trisep', color: 'var(--push)'},
+  pull: {name: 'PULL', sub: 'Punggung · Bisep', color: 'var(--pull)'},
+  leg:  {name: 'LEG',  sub: 'Kaki · Bokong', color: 'var(--leg)'},
+};
+const NEXT = {push: 'pull', pull: 'leg', leg: 'push'};
+const DEFAULT_PLAN = {
+  push: ['pushup', 'floorpress', 'shoulderpress', 'lateral', 'dips', 'ohtri'],
+  pull: ['bentrow', 'onerow', 'reardelt', 'superman', 'curl', 'hammer'],
+  leg:  ['goblet', 'rdl', 'lunge', 'bss', 'bridge', 'calf'],
+};
+const REPS = range(5, 20), KGS = range(0, 20), SETS = range(1, 4);
+
+/* Animated figure poses. Canvas 100x96, floor at y=88, figure faces right.
+   hip:[x,y], t: torso angle (0 = upright, 90 = lying with head right),
+   h1/h2: hand targets, f1/f2: foot targets (solved with 2-bone IK),
+   ha1/ha2: [upper arm, forearm] absolute angles (0 = down, + = forward).
+   eb/kb: elbow/knee bend side (+1 clockwise on screen). db: dumbbells drawn (1 or 2). */
+const EX = {
+  pushup: {name: 'Push-up', bw: 1, cue: 'Badan lurus dari kepala sampai tumit, perut dikencangkan. Turun sampai dada hampir menyentuh lantai, siku sekitar 45° dari badan, lalu dorong naik.',
+    A: {hip: [38, 74], t: 65, h1: [62, 88], f1: [9, 88]}, B: {hip: [40, 81], t: 82}},
+  floorpress: {name: 'Dumbbell Floor Press', db: 2, eb: [-1, -1], kb: [1, 1], td: -1, cue: 'Tiduran telentang, lutut ditekuk, kaki menapak. Turunkan dumbbell sampai lengan atas menyentuh lantai, lalu dorong lurus ke atas dada.',
+    A: {hip: [35, 84], t: 90, h1: [61, 59], f1: [17, 88]}, B: {h1: [61, 74]}},
+  shoulderpress: {name: 'Dumbbell Shoulder Press', db: 2, cue: 'Berdiri tegak, perut dikencangkan. Dorong dumbbell dari depan bahu lurus ke atas kepala. Jangan melengkungkan punggung bawah.',
+    A: {hip: [50, 56], t: 0, h1: [54, 25], f1: [52, 88], f2: [47, 88]}, B: {h1: [51, 7]}},
+  lateral: {name: 'Lateral Raise', front: 1, db: 2, eb: [1, -1], cue: 'Tampak depan. Siku sedikit ditekuk, angkat dumbbell ke samping sampai setinggi bahu. Turunkan pelan, jangan diayun.',
+    A: {hip: [50, 56], t: 0, h1: [58, 55], h2: [42, 55], f1: [55, 88], f2: [45, 88]}, B: {h1: [80, 33], h2: [20, 33]}},
+  dips: {name: 'Chair Dips', bw: 1, chair: {x: 12, y: 62, w: 26, back: 'l'}, cue: 'Tangan di tepi kursi di belakang badan, jari menghadap depan. Turunkan badan sampai siku ±90°, lalu dorong naik. Pastikan kursi tidak bergeser.',
+    A: {hip: [44, 63], t: -8, h1: [37, 62], f1: [64, 88]}, B: {hip: [44, 76]}},
+  ohtri: {name: 'Overhead Triceps Extension', db: 1, cue: 'Pegang satu dumbbell dengan dua tangan di atas kepala. Turunkan ke belakang kepala dengan siku tetap menunjuk ke atas, lalu luruskan lagi.',
+    A: {hip: [50, 56], t: 0, h1: [50, 7], f1: [52, 88], f2: [47, 88]}, B: {h1: [42, 21]}},
+
+  bentrow: {name: 'Bent-over Row', db: 2, cue: 'Bungkukkan badan ±45°, punggung lurus, lutut sedikit ditekuk. Tarik dumbbell ke arah pinggang, rapatkan tulang belikat, lalu turunkan pelan.',
+    A: {hip: [42, 58], t: 60, h1: [64.5, 70], f1: [46, 88], f2: [42, 88]}, B: {h1: [53, 57]}},
+  onerow: {name: 'One-arm Row', db: 1, chair: {x: 62, y: 66, w: 22, back: 'r'}, cue: 'Satu tangan bertumpu di kursi/kasur, punggung datar. Tarik dumbbell ke arah pinggang dengan siku dekat badan. Ganti sisi setelah set selesai.',
+    A: {hip: [40, 56], t: 54.7, h1: [58, 66], h2: [66, 66], f1: [44, 88], f2: [34, 88]}, B: {h1: [50, 50], h2: [66, 66]}},
+  reardelt: {name: 'Rear Delt Fly', front: 1, tl: 13, db: 2, eb: [-1, 1], cue: 'Tampak depan, badan membungkuk hampir sejajar lantai. Siku sedikit ditekuk, buka lengan ke samping sampai setinggi bahu, rapatkan punggung atas.',
+    A: {hip: [50, 58], t: 0, h1: [53, 68], h2: [47, 68], f1: [56, 88], f2: [44, 88]}, B: {h1: [76, 47], h2: [24, 47]}},
+  superman: {name: 'Superman', bw: 1, td: -1, cue: 'Tengkurap, lengan lurus ke depan. Angkat dada, lengan, dan kaki bersamaan, tahan 1–2 detik di atas, lalu turunkan.',
+    A: {hip: [40, 84], t: 90, h1: [88, 86], f1: [8, 86]}, B: {t: 80, h1: [88, 73], f1: [9, 77]}},
+  curl: {name: 'Bicep Curl', db: 2, cue: 'Berdiri tegak, siku menempel di samping badan. Angkat dumbbell dengan telapak menghadap atas, turunkan pelan. Badan jangan ikut berayun.',
+    A: {hip: [50, 56], t: 0, ha1: [0, 0], f1: [52, 88], f2: [47, 88]}, B: {ha1: [-4, 140]}},
+  hammer: {name: 'Hammer Curl', db: 2, dbv: 1, cue: 'Seperti bicep curl, tetapi telapak tangan saling berhadapan (posisi memegang palu). Siku tetap di samping badan.',
+    A: {hip: [50, 56], t: 0, ha1: [0, 0], f1: [52, 88], f2: [47, 88]}, B: {ha1: [-4, 140]}},
+
+  goblet: {name: 'Goblet Squat', db: 1, cue: 'Pegang satu dumbbell tegak di depan dada. Kaki selebar bahu, turun seperti duduk sampai paha sejajar lantai, dada tetap tegak, lalu berdiri.',
+    A: {hip: [50, 56], t: 0, h1: [56, 37], f1: [52, 88], f2: [48, 88]}, B: {hip: [38, 74], t: 35, h1: [59, 58]}},
+  rdl: {name: 'Romanian Deadlift', db: 2, cue: 'Lutut sedikit ditekuk dan tetap. Dorong pinggul ke belakang, dumbbell turun dekat kaki sampai terasa tarikan di paha belakang, lalu berdiri sambil mengencangkan bokong.',
+    A: {hip: [49, 57], t: 0, h1: [50, 56], f1: [52, 88], f2: [48, 88]}, B: {hip: [40, 58], t: 75, h1: [64, 76], f1: [51, 88], f2: [47, 88]}},
+  lunge: {name: 'Reverse Lunge', db: 2, cue: 'Langkahkan satu kaki ke belakang, turunkan sampai lutut belakang hampir menyentuh lantai. Lutut depan di atas pergelangan kaki. Kembali, ganti kaki.',
+    A: {hip: [50, 56], t: 0, h1: [51, 55], f1: [53, 88], f2: [48, 88]}, B: {hip: [42, 70], h1: [43, 69], f1: [56, 88], f2: [22, 88]}},
+  bss: {name: 'Bulgarian Split Squat', db: 2, td: -1, chair: {x: 4, y: 64, w: 24, back: 'l'}, cue: 'Punggung kaki belakang di atas kursi. Turunkan badan lurus ke bawah sampai paha depan hampir sejajar lantai. Selesaikan satu sisi, lalu ganti.',
+    A: {hip: [50, 58], t: 0, h1: [51, 57], f1: [60, 88], f2: [24, 63]}, B: {hip: [44, 70], h1: [45, 69]}},
+  bridge: {name: 'Glute Bridge', bw: 1, kb: [1, 1], td: -1, cue: 'Tiduran telentang, lutut ditekuk, kaki menapak. Angkat pinggul sampai badan lurus dari bahu ke lutut, kencangkan bokong 1 detik, lalu turunkan.',
+    A: {hip: [40, 84], t: 90, h1: [42, 87], f1: [24, 88]}, B: {hip: [40, 72], t: 117, h1: [40, 87]}},
+  calf: {name: 'Calf Raise', db: 2, cue: 'Berdiri tegak, angkat tumit setinggi mungkin, tahan 1 detik di atas, turunkan pelan. Boleh berpegangan ke dinding untuk keseimbangan.',
+    A: {hip: [50, 56], t: 0, h1: [51, 55], f1: [52, 88], f2: [48, 88]}, B: {hip: [50, 51], h1: [51, 50], f1: [52, 83], f2: [48, 83]}},
+};
+for (const ex of Object.values(EX)) {
+  const A = ex.A, rawB = ex.B;
+  A.h2 = A.h2 || A.h1; A.ha2 = A.ha2 || A.ha1; A.f2 = A.f2 || A.f1;
+  const B = {...A, ...rawB};
+  if (rawB.h1 && !rawB.h2) B.h2 = rawB.h1;
+  if (rawB.ha1 && !rawB.ha2) B.ha2 = rawB.ha1;
+  if (rawB.f1 && !rawB.f2) B.f2 = rawB.f1;
+  ex.B = B;
+}
+
+/* ---------- state ---------- */
+function fresh() { return {v: 1, rest: 90, plan: structuredClone(DEFAULT_PLAN), custom: {}, sessions: [], active: null, restEnd: 0}; }
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.sessions)) return {...fresh(), ...s}; } catch (e) {}
+  return fresh();
+}
+let S = load();
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { alert('Gagal menyimpan data. Memori iPhone mungkin penuh. Segera lakukan Backup dari menu Pengaturan.'); }
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+/* ---------- helpers ---------- */
+function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
+function exInfo(id) { return EX[id] || S.custom[id] || {name: '(gerakan dihapus)'}; }
+function exName(id) { return exInfo(id).name; }
+function dayStart(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
+function ago(ts) {
+  const n = Math.round((dayStart(Date.now()) - dayStart(ts)) / 864e5);
+  return n <= 0 ? 'hari ini' : n === 1 ? 'kemarin' : n + ' hari lalu';
+}
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('id-ID', {weekday: 'short', day: 'numeric', month: 'short'}) + ' · ' + new Date(ts).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}); }
+function fmtDur(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = s % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0');
+}
+function fmtSets(sets) {
+  if (!sets || !sets.length) return '';
+  const kgs = [...new Set(sets.map(s => s.kg))];
+  const reps = sets.map(s => s.reps);
+  if (kgs.length === 1) {
+    const r = reps.every(x => x === reps[0]) ? sets.length + '×' + reps[0] : reps.join('/') + ' rep';
+    return r + (kgs[0] ? ' @ ' + kgs[0] + ' kg' : '');
+  }
+  return sets.map(s => s.reps + '×' + s.kg + 'kg').join(', ');
+}
+function lastSets(id) {
+  for (let i = S.sessions.length - 1; i >= 0; i--) {
+    const e = S.sessions[i].entries.find(e => e.ex === id);
+    if (e) return e.sets;
+  }
+  return null;
+}
+function lastOfType(type) { for (let i = S.sessions.length - 1; i >= 0; i--) if (S.sessions[i].type === type) return S.sessions[i]; return null; }
+let toastTm;
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTm); toastTm = setTimeout(() => t.classList.remove('show'), 3500); }
+
+/* ---------- wheel picker (no typing) ---------- */
+const ROW = 40;
+function wheel(vals, cur, onChange) {
+  const wrap = document.createElement('div'); wrap.className = 'wheel-wrap';
+  const w = document.createElement('div'); w.className = 'wheel';
+  w.innerHTML = '<div class="pad"></div>' + vals.map(v => `<div class="it">${v}</div>`).join('') + '<div class="pad"></div>';
+  wrap.appendChild(w);
+  const items = w.querySelectorAll('.it');
+  let idx = Math.max(0, vals.indexOf(cur)), tm;
+  const mark = () => items.forEach((el, i) => el.classList.toggle('sel', i === idx));
+  mark();
+  requestAnimationFrame(() => { w.scrollTop = idx * ROW; });
+  w.addEventListener('scroll', () => {
+    const i = Math.min(vals.length - 1, Math.max(0, Math.round(w.scrollTop / ROW)));
+    if (i !== idx) { idx = i; mark(); }
+    clearTimeout(tm); tm = setTimeout(() => onChange(vals[idx]), 150);
+  }, {passive: true});
+  items.forEach((el, i) => el.addEventListener('click', () => w.scrollTo({top: i * ROW, behavior: 'smooth'})));
+  return wrap;
+}
+
+/* ---------- animated figures ---------- */
+const figs = [];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function ik(s, p, a, b, sign) {
+  const dx = p[0] - s[0], dy = p[1] - s[1], d = Math.hypot(dx, dy) || 0.001;
+  const dc = Math.min(Math.max(d, Math.abs(a - b) + 0.1), a + b - 0.01);
+  const ux = dx / d, uy = dy / d;
+  const al = Math.acos(Math.max(-1, Math.min(1, (a * a + dc * dc - b * b) / (2 * a * dc)))) * sign;
+  return [[s[0] + a * (ux * Math.cos(al) - uy * Math.sin(al)), s[1] + a * (ux * Math.sin(al) + uy * Math.cos(al))], [s[0] + ux * dc, s[1] + uy * dc]];
+}
+const dirDown = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), Math.cos(r)]; };
+function pose(ex, p) {
+  const A = ex.A, B = ex.B, L = (a, b) => a + (b - a) * p, LV = (a, b) => [L(a[0], b[0]), L(a[1], b[1])];
+  const hip = LV(A.hip, B.hip), t = L(A.t, B.t) * Math.PI / 180, tl = ex.tl || 26;
+  const sh = [hip[0] + tl * Math.sin(t), hip[1] - tl * Math.cos(t)];
+  const eb = ex.eb || [1, 1], kb = ex.kb || [-1, -1], td = ex.td || 1;
+  const out = {hip, sh, arms: [], legs: []};
+  for (let i = 0; i < 2; i++) {
+    const side = i ? -1 : 1, k = i ? '2' : '1';
+    const s = ex.front ? [sh[0] + 7 * side, sh[1]] : sh;
+    const hp = ex.front ? [hip[0] + 4 * side, hip[1]] : hip;
+    let el, hand;
+    if (A['ha' + k]) {
+      const u = dirDown(L(A['ha' + k][0], B['ha' + k][0])), f = dirDown(L(A['ha' + k][1], B['ha' + k][1]));
+      el = [s[0] + 13 * u[0], s[1] + 13 * u[1]]; hand = [el[0] + 12 * f[0], el[1] + 12 * f[1]];
+    } else [el, hand] = ik(s, LV(A['h' + k], B['h' + k]), 13, 12, eb[i]);
+    out.arms.push([s, el, hand]);
+    const [kn, an] = ik(hp, LV(A['f' + k], B['f' + k]), 16, 16, kb[i]);
+    const dy = 88 - an[1], dir = ex.front ? 0 : td;
+    const toe = ex.front ? [an[0] + 3 * side, an[1]] : dy < 6 ? [an[0] + dir * Math.sqrt(36 - dy * dy), 88] : [an[0] + dir * 5, an[1] + 1];
+    out.legs.push([hp, kn, an, toe]);
+  }
+  const hd = ex.front ? [0, -1] : [Math.sin(t), -Math.cos(t)];
+  out.head = [sh[0] + hd[0] * 8, Math.min(sh[1] + hd[1] * 8, 82.5)];
+  return out;
+}
+const pts = a => 'M' + a.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+function mountFig(svg, id) {
+  const ex = EX[id];
+  svg.setAttribute('viewBox', '0 0 100 96'); svg.classList.add('fig');
+  if (!ex) { svg.innerHTML = '<text x="50" y="60" text-anchor="middle" font-size="34">💪</text>'; return; }
+  const back = ex.front ? '' : ' back';
+  let s = '<line class="floor" x1="2" y1="88.6" x2="98" y2="88.6"/>';
+  if (ex.chair) {
+    const c = ex.chair, bx = c.back === 'l' ? c.x + 1 : c.x + c.w - 1;
+    s += `<g class="prop"><rect x="${c.x}" y="${c.y}" width="${c.w}" height="3" rx="1"/><line x1="${c.x + 2}" y1="${c.y + 3}" x2="${c.x + 2}" y2="88"/><line x1="${c.x + c.w - 2}" y1="${c.y + 3}" x2="${c.x + c.w - 2}" y2="88"/><line x1="${bx}" y1="${c.y}" x2="${bx}" y2="${c.y - 24}"/></g>`;
+  }
+  s += `<path class="a2${back}"/><path class="l2${back}"/><line class="torso"/><path class="l1"/><circle class="head" r="5.5"/><path class="a1"/>`;
+  for (let i = 0; i < (ex.db || 0); i++) s += ex.dbv ? `<rect class="db d${i}" width="5" height="11" rx="1.5"/>` : `<circle class="db d${i}" r="4.2"/>`;
+  svg.innerHTML = s;
+  const q = c => svg.querySelector('.' + c);
+  const el = {a1: q('a1'), a2: q('a2'), l1: q('l1'), l2: q('l2'), torso: q('torso'), head: q('head'), d: [q('d0'), q('d1')]};
+  const draw = p => {
+    const P = pose(ex, p);
+    el.a1.setAttribute('d', pts(P.arms[0])); el.a2.setAttribute('d', pts(P.arms[1]));
+    el.l1.setAttribute('d', pts(P.legs[0])); el.l2.setAttribute('d', pts(P.legs[1]));
+    el.torso.setAttribute('x1', P.hip[0]); el.torso.setAttribute('y1', P.hip[1]);
+    el.torso.setAttribute('x2', P.sh[0]); el.torso.setAttribute('y2', P.sh[1]);
+    el.head.setAttribute('cx', P.head[0]); el.head.setAttribute('cy', P.head[1]);
+    el.d.forEach((d, i) => {
+      if (!d) return;
+      const h = P.arms[i][2];
+      if (ex.dbv) { d.setAttribute('x', h[0] - 2.5); d.setAttribute('y', h[1] - 5.5); }
+      else { d.setAttribute('cx', h[0]); d.setAttribute('cy', h[1]); }
+    });
+  };
+  if (reduceMotion) draw(0.5); else figs.push({svg, draw});
+}
+(function loop(now) {
+  const p = (1 - Math.cos(now / 2600 * 2 * Math.PI)) / 2;
+  for (let i = figs.length - 1; i >= 0; i--) {
+    if (!figs[i].svg.isConnected) figs.splice(i, 1); else figs[i].draw(p);
+  }
+  requestAnimationFrame(loop);
+})(0);
+
+/* ---------- rest timer ---------- */
+let audioCtx;
+function unlockAudio() {
+  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {}
+}
+function beep() {
+  if (!audioCtx) return;
+  [0, 0.35, 0.7].forEach(off => {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t0 = audioCtx.currentTime + off;
+    o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.25);
+    o.start(t0); o.stop(t0 + 0.3);
+  });
+}
+function startRest() { S.restEnd = Date.now() + S.rest * 1000; save(); tickRest(); }
+function tickRest() {
+  const bar = document.getElementById('rest');
+  if (!S.restEnd) { bar.classList.remove('show'); return; }
+  const left = S.restEnd - Date.now();
+  if (left <= 0) {
+    S.restEnd = 0; save(); bar.classList.remove('show');
+    beep(); if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    toast('Istirahat selesai, lanjut set berikutnya!');
+    return;
+  }
+  bar.classList.add('show');
+  document.getElementById('restT').textContent = fmtDur(left + 999);
+}
+document.getElementById('restPlus').onclick = () => { S.restEnd += 15000; save(); tickRest(); };
+document.getElementById('restSkip').onclick = () => { S.restEnd = 0; save(); tickRest(); };
+setInterval(() => {
+  tickRest();
+  const e = document.getElementById('elapsed'); if (e && S.active) e.textContent = fmtDur(Date.now() - S.active.start);
+}, 250);
+
+/* ---------- views ---------- */
+let view = S.active ? 'workout' : 'home', curEx = null, lastResult = null, editType = 'push', progEx = null;
+const app = document.getElementById('app');
+function go(v, arg) { view = v; if (v === 'exercise') curEx = arg; render(); scrollTo(0, 0); }
+
+function render() {
+  document.getElementById('nav').style.display = ['workout', 'exercise'].includes(view) ? 'none' : 'flex';
+  document.body.classList.toggle('noNav', ['workout', 'exercise'].includes(view));
+  const t = S.active ? S.active.type : null;
+  document.documentElement.style.setProperty('--accent', t ? TYPES[t].color : 'var(--push)');
+  ({home, workout, exercise, done, history, progress, settings})[view]();
+  renderNav();
+}
+function renderNav() {
+  const items = [['home', '🏋️', 'Mulai'], ['history', '🗓️', 'Riwayat'], ['progress', '📈', 'Progres'], ['settings', '⚙️', 'Pengaturan']];
+  const nav = document.getElementById('nav');
+  nav.innerHTML = items.map(([v, i, l]) => `<button data-v="${v}" class="${view === v || (view === 'done' && v === 'home') ? 'on' : ''}"><span>${i}</span>${l}</button>`).join('');
+  nav.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.v));
+}
+
+function home() {
+  const last = S.sessions[S.sessions.length - 1];
+  const suggest = last ? NEXT[last.type] : 'push';
+  let h = `<h1>Hari ini kamu workout apa?</h1>`;
+  h += last ? `<div class="muted">Terakhir: ${TYPES[last.type].name}, ${ago(last.start)}</div>` : `<div class="muted">Belum ada catatan. Ayo mulai sesi pertama!</div>`;
+  if (S.active) {
+    h += `<div class="card" style="border:1px solid var(--accent)"><b>Workout ${TYPES[S.active.type].name} sedang berjalan</b><div class="muted small">Mulai ${fmtDate(S.active.start)}</div>
+      <div class="row" style="margin-top:10px"><button class="primary grow" id="resume">Lanjutkan</button></div></div>`;
+  }
+  for (const k of Object.keys(TYPES)) {
+    const T = TYPES[k], l = lastOfType(k);
+    h += `<button class="big" data-t="${k}" style="--c:${T.color}"><b>${T.name} ${k === suggest && !S.active ? '<span class="badge" style="--c:' + T.color + '">Giliran berikutnya</span>' : ''}</b>
+      <div>${T.sub}</div><div class="muted small">${l ? 'Terakhir ' + ago(l.start) : 'Belum pernah'} · ${S.plan[k].length} gerakan</div></button>`;
+  }
+  app.innerHTML = h;
+  const r = document.getElementById('resume'); if (r) r.onclick = () => go('workout');
+  app.querySelectorAll('.big').forEach(b => b.onclick = () => {
+    const k = b.dataset.t;
+    if (S.active) {
+      if (S.active.type === k) return go('workout');
+      if (!confirm(`Workout ${TYPES[S.active.type].name} masih berjalan. Batalkan dan mulai ${TYPES[k].name}? Set yang belum disimpan akan hilang.`)) return;
+    }
+    S.active = {type: k, start: Date.now(), note: '', order: [...S.plan[k]], ex: {}};
+    S.restEnd = 0; save(); go('workout');
+  });
+}
+
+function entryFor(id) {
+  const a = S.active;
+  if (!a.ex[id]) {
+    const prev = lastSets(id), bw = exInfo(id).bw;
+    a.ex[id] = {sets: prev ? prev.map(s => ({reps: s.reps, kg: s.kg, done: false})) : [1, 2, 3].map(() => ({reps: 10, kg: bw ? 0 : 5, done: false}))};
+  }
+  return a.ex[id];
+}
+
+function workout() {
+  const a = S.active; if (!a) return go('home');
+  const T = TYPES[a.type];
+  let h = `<div class="top"><button class="ghost" id="menu">‹ Menu</button><div class="muted" style="font-variant-numeric:tabular-nums">⏱ <span id="elapsed">${fmtDur(Date.now() - a.start)}</span></div></div>
+    <h1 style="color:${T.color}">${T.name}</h1><div class="muted">${T.sub} · ketuk gerakan untuk mencatat</div>`;
+  a.order.forEach(id => {
+    const prev = lastSets(id), e = a.ex[id], n = e ? e.sets.filter(s => s.done).length : 0;
+    h += `<button class="exitem" data-id="${esc(id)}"><svg data-fig="${esc(id)}"></svg><div class="grow"><div class="name">${esc(exName(id))}</div>
+      <div class="muted small">${prev ? 'Lalu: ' + fmtSets(prev) : 'Belum pernah dicatat'}</div></div>
+      ${n ? `<div class="done-mark">${n}/${e.sets.length} ✓</div>` : '<div class="muted">›</div>'}</button>`;
+  });
+  h += `<h2>Catatan sesi</h2><textarea id="note" placeholder="Opsional, misal: bahu kiri agak pegal">${esc(a.note)}</textarea>
+    <div class="row" style="margin-top:16px"><button class="danger" id="cancel">Batalkan</button><button class="primary grow" id="finish">Selesai Workout</button></div>`;
+  app.innerHTML = h;
+  app.querySelectorAll('svg[data-fig]').forEach(s => mountFig(s, s.dataset.fig));
+  app.querySelectorAll('.exitem').forEach(b => b.onclick = () => go('exercise', b.dataset.id));
+  document.getElementById('menu').onclick = () => go('home');
+  document.getElementById('note').oninput = e => { a.note = e.target.value; save(); };
+  document.getElementById('cancel').onclick = () => {
+    if (!confirm('Batalkan workout ini? Semua set di sesi ini tidak akan disimpan.')) return;
+    S.active = null; S.restEnd = 0; save(); go('home');
+  };
+  document.getElementById('finish').onclick = finish;
+}
+
+function exercise() {
+  const a = S.active; if (!a) return go('home');
+  const id = curEx, info = exInfo(id), e = entryFor(id), bw = !!info.bw, prev = lastSets(id);
+  save();
+  const i = a.order.indexOf(id), next = a.order[i + 1];
+  app.innerHTML = `<div class="top"><button class="ghost" id="back">‹ Daftar gerakan</button><div class="muted">${i + 1}/${a.order.length}</div></div>
+    <h1>${esc(info.name)}</h1>
+    <svg class="hero" id="hero"></svg>
+    ${info.cue ? `<div class="cue">${esc(info.cue)}</div>` : ''}
+    <div class="muted">${prev ? 'Sesi lalu: <b style="color:var(--text)">' + fmtSets(prev) + '</b>. Coba samai atau kalahkan!' : 'Gerakan baru, belum ada catatan sebelumnya.'}</div>
+    <div class="card setcount"><div><b>Jumlah set</b><div class="muted small">Geser roda untuk memilih</div></div><div id="setWheel"></div></div>
+    <div class="colhead ${bw ? 'bw' : ''}"><div></div><div>Repetisi</div>${bw ? '' : '<div>Beban (kg)</div>'}<div>Selesai</div></div>
+    <div id="sets"></div>
+    <div class="muted small" style="margin:8px 0 14px">Ketuk ✓ setelah menyelesaikan set. Timer istirahat ${S.rest} detik akan berjalan otomatis.</div>
+    <button class="primary" style="width:100%" id="next">${next ? 'Berikutnya: ' + esc(exName(next)) + ' ›' : 'Kembali ke daftar ›'}</button>`;
+  mountFig(document.getElementById('hero'), id);
+  document.getElementById('back').onclick = () => go('workout');
+  document.getElementById('next').onclick = () => next ? go('exercise', next) : go('workout');
+  document.getElementById('setWheel').appendChild(wheel(SETS, e.sets.length, n => {
+    if (n === e.sets.length) return;
+    while (e.sets.length < n) { const l = e.sets[e.sets.length - 1]; e.sets.push({reps: l.reps, kg: l.kg, done: false}); }
+    e.sets.length = n; save(); renderSets();
+  }));
+  function renderSets() {
+    const box = document.getElementById('sets'); box.innerHTML = '';
+    e.sets.forEach((s, k) => {
+      const row = document.createElement('div'); row.className = 'setrow' + (bw ? ' bw' : '');
+      row.innerHTML = `<div class="lbl">Set ${k + 1}</div>`;
+      row.appendChild(wheel(REPS, s.reps, v => { s.reps = v; save(); }));
+      if (!bw) row.appendChild(wheel(KGS, s.kg, v => { s.kg = v; save(); }));
+      const b = document.createElement('button'); b.className = 'tick' + (s.done ? ' on' : ''); b.textContent = '✓';
+      b.onclick = () => {
+        unlockAudio();
+        s.done = !s.done; b.classList.toggle('on', s.done); save();
+        if (s.done) startRest();
+      };
+      row.appendChild(b); box.appendChild(row);
+    });
+  }
+  renderSets();
+}
+
+function finish() {
+  const a = S.active;
+  const entries = a.order.filter(id => a.ex[id]).map(id => ({ex: id, name: exName(id), sets: a.ex[id].sets.filter(s => s.done).map(s => ({reps: s.reps, kg: s.kg}))})).filter(e => e.sets.length);
+  if (!entries.length) {
+    if (confirm('Belum ada set yang dicentang ✓. Batalkan sesi ini?')) { S.active = null; S.restEnd = 0; save(); go('home'); }
+    return;
+  }
+  if (!confirm('Selesaikan dan simpan workout ini?')) return;
+  const prs = [];
+  for (const e of entries) {
+    const prevSets = S.sessions.flatMap(s => s.entries.filter(x => x.ex === e.ex).flatMap(x => x.sets));
+    if (!prevSets.length) continue;
+    const beat = e.sets.filter(s => !prevSets.some(p => p.kg >= s.kg && p.reps >= s.reps));
+    if (beat.length) {
+      const b = beat.sort((x, y) => y.kg - x.kg || y.reps - x.reps)[0];
+      prs.push(e.name + ': ' + (b.kg ? b.kg + ' kg × ' + b.reps + ' rep' : b.reps + ' rep'));
+    }
+  }
+  const sess = {id: Date.now(), type: a.type, start: a.start, end: Date.now(), note: a.note.trim(), entries};
+  S.sessions.push(sess); S.active = null; S.restEnd = 0; save();
+  lastResult = {sess, prs}; go('done');
+}
+
+function done() {
+  if (!lastResult) return go('home');
+  const {sess, prs} = lastResult, sets = sess.entries.flatMap(e => e.sets);
+  let h = `<h1>Mantap! 💪</h1><div class="muted">Workout ${TYPES[sess.type].name} tersimpan.</div>
+    <div class="stat" style="margin:16px 0"><div><b>${fmtDur(sess.end - sess.start)}</b><span class="small muted">durasi</span></div>
+    <div><b>${sets.length}</b><span class="small muted">set</span></div><div><b>${sets.reduce((n, s) => n + s.reps, 0)}</b><span class="small muted">repetisi</span></div></div>`;
+  if (prs.length) h += `<h2>🏆 Rekor baru</h2>` + prs.map(p => `<div class="pr">${esc(p)}</div>`).join('');
+  h += `<h2>Ringkasan</h2>` + sess.entries.map(e => `<div class="card row"><div class="grow">${esc(e.name)}</div><div class="muted">${fmtSets(e.sets)}</div></div>`).join('');
+  h += `<button class="primary" style="width:100%;margin-top:12px" id="ok">Selesai</button>`;
+  app.innerHTML = h;
+  document.getElementById('ok').onclick = () => go('home');
+}
+
+function history() {
+  let h = `<h1>Riwayat</h1><div class="muted">${S.sessions.length} sesi tercatat</div>`;
+  if (!S.sessions.length) h += `<div class="card muted">Belum ada sesi. Riwayat muncul setelah kamu menekan "Selesai Workout".</div>`;
+  [...S.sessions].reverse().forEach(s => {
+    const T = TYPES[s.type], n = s.entries.reduce((k, e) => k + e.sets.length, 0);
+    h += `<details><summary class="row"><span class="badge" style="--c:${T.color}">${T.name}</span><div class="grow">${fmtDate(s.start)}</div><div class="muted small">${n} set · ${fmtDur(s.end - s.start)}</div></summary>
+      <div style="margin-top:10px">${s.entries.map(e => `<div class="row small" style="padding:4px 0"><div class="grow">${esc(e.name)}</div><div class="muted">${fmtSets(e.sets)}</div></div>`).join('')}
+      ${s.note ? `<div class="cue small">📝 ${esc(s.note)}</div>` : ''}
+      <button class="danger small" data-del="${s.id}">Hapus sesi ini</button></div></details>`;
+  });
+  app.innerHTML = h;
+  app.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    if (!confirm('Hapus sesi ini dari riwayat? Tidak bisa dibatalkan.')) return;
+    S.sessions = S.sessions.filter(s => s.id !== +b.dataset.del); save(); render();
+  });
+}
+
+function progress() {
+  const ids = [...new Set(S.sessions.flatMap(s => s.entries.map(e => e.ex)))];
+  let h = `<h1>Progres</h1>`;
+  if (!ids.length) { app.innerHTML = h + `<div class="card muted">Grafik progres muncul setelah kamu menyimpan minimal satu workout.</div>`; return; }
+  if (!ids.includes(progEx)) progEx = ids[0];
+  const data = S.sessions.map(s => ({ts: s.start, e: s.entries.find(e => e.ex === progEx)})).filter(d => d.e);
+  const name = data[data.length - 1].e.name;
+  const weighted = data.some(d => d.e.sets.some(s => s.kg > 0));
+  const val = d => weighted ? Math.max(...d.e.sets.map(s => s.kg)) : d.e.sets.reduce((n, s) => n + s.reps, 0);
+  const label = weighted ? 'Beban terberat (kg)' : 'Total repetisi';
+  h += `<select id="pick">${ids.map(id => `<option value="${esc(id)}" ${id === progEx ? 'selected' : ''}>${esc(exName(id) === '(gerakan dihapus)' ? (S.sessions.flatMap(s => s.entries).find(e => e.ex === id) || {}).name : exName(id))}</option>`).join('')}</select>
+    <h2>${esc(name)}</h2><div class="muted small">${label} per sesi</div>${chart(data.map(val), data.map(d => new Date(d.ts).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})))}
+    <h2>Semua catatan</h2>` + [...data].reverse().map(d => `<div class="card row small"><div class="grow">${fmtDate(d.ts)}</div><div class="muted">${fmtSets(d.e.sets)}</div></div>`).join('');
+  app.innerHTML = h;
+  document.getElementById('pick').onchange = e => { progEx = e.target.value; render(); };
+}
+function chart(vals, labels) {
+  const W = 340, H = 180, px = 30, py = 22, n = vals.length;
+  const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+  const x = i => n === 1 ? W / 2 : px + i * (W - px * 2) / (n - 1), y = v => H - py - (v - lo) / span * (H - py * 2);
+  const p = vals.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}"><polyline class="ln" points="${p}"/>`;
+  vals.forEach((v, i) => {
+    s += `<circle class="dot" cx="${x(i)}" cy="${y(v)}" r="3.5"/>`;
+    if (n <= 8 || i === 0 || i === n - 1 || v === hi) s += `<text x="${x(i)}" y="${y(v) - 8}" text-anchor="middle">${v}</text>`;
+  });
+  s += `<text x="${x(0)}" y="${H - 5}" text-anchor="middle">${labels[0]}</text>`;
+  if (n > 1) s += `<text x="${x(n - 1)}" y="${H - 5}" text-anchor="middle">${labels[n - 1]}</text>`;
+  return s + '</svg>';
+}
+
+function settings() {
+  const list = S.plan[editType];
+  const avail = [...Object.keys(EX), ...Object.keys(S.custom)].filter(id => !list.includes(id));
+  app.innerHTML = `<h1>Pengaturan</h1>
+    <h2>Timer istirahat</h2><div class="card row"><button id="rm">−15</button><div class="grow" style="text-align:center;font-size:22px;font-weight:700">${S.rest} detik</div><button id="rp">+15</button></div>
+    <h2>Daftar gerakan</h2><div class="seg">${Object.keys(TYPES).map(k => `<button data-k="${k}" class="${k === editType ? 'on' : ''}">${TYPES[k].name}</button>`).join('')}</div>
+    <div class="list-edit">${list.map((id, i) => `<div class="row"><div class="grow">${esc(exName(id))}</div>
+      <button data-up="${i}" ${i ? '' : 'disabled'}>↑</button><button data-dn="${i}" ${i < list.length - 1 ? '' : 'disabled'}>↓</button><button class="danger" data-rm="${i}">✕</button></div>`).join('')}</div>
+    ${avail.length ? `<div class="row" style="margin-top:8px"><select id="addSel" class="grow">${avail.map(id => `<option value="${esc(id)}">${esc(exName(id))}</option>`).join('')}</select><button id="add">Tambah</button></div>` : ''}
+    <div class="row" style="margin-top:8px"><input type="text" id="newName" class="grow" placeholder="Gerakan baru (nama sendiri)" maxlength="40"><button id="addNew">Buat</button></div>
+    <button class="ghost small" id="resetPlan">Kembalikan daftar ${TYPES[editType].name} ke bawaan</button>
+    <h2>Backup data</h2><div class="muted small">Data hanya tersimpan di iPhone ini. Backup rutin, simpan filenya ke Files/iCloud.</div>
+    <div class="row" style="margin-top:8px"><button class="grow" id="exp">⬇️ Backup</button><button class="grow" id="imp">⬆️ Restore</button></div>
+    <input type="file" id="file" accept="application/json,.json" style="display:none">
+    <div class="muted small" style="margin-top:24px;text-align:center">PPL Log · ${S.sessions.length} sesi tersimpan · berjalan offline</div>`;
+  const setRest = d => { S.rest = Math.min(300, Math.max(30, S.rest + d)); save(); render(); };
+  document.getElementById('rm').onclick = () => setRest(-15);
+  document.getElementById('rp').onclick = () => setRest(15);
+  app.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { editType = b.dataset.k; render(); });
+  const mv = (i, d) => { [list[i], list[i + d]] = [list[i + d], list[i]]; save(); render(); };
+  app.querySelectorAll('[data-up]').forEach(b => b.onclick = () => mv(+b.dataset.up, -1));
+  app.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => mv(+b.dataset.dn, 1));
+  app.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.rm;
+    if (!confirm(`Hapus "${exName(list[i])}" dari daftar ${TYPES[editType].name}? Riwayatnya tetap tersimpan.`)) return;
+    list.splice(i, 1); save(); render();
+  });
+  const add = document.getElementById('add'); if (add) add.onclick = () => { list.push(document.getElementById('addSel').value); save(); render(); };
+  document.getElementById('addNew').onclick = () => {
+    const n = document.getElementById('newName').value.trim(); if (!n) return;
+    const id = 'c_' + Date.now(); S.custom[id] = {name: n}; list.push(id); save(); render();
+  };
+  document.getElementById('resetPlan').onclick = () => {
+    if (!confirm(`Kembalikan daftar ${TYPES[editType].name} ke bawaan?`)) return;
+    S.plan[editType] = [...DEFAULT_PLAN[editType]]; save(); render();
+  };
+  document.getElementById('exp').onclick = backup;
+  const file = document.getElementById('file');
+  document.getElementById('imp').onclick = () => file.click();
+  file.onchange = () => {
+    const f = file.files[0]; if (!f) return;
+    f.text().then(txt => {
+      const d = JSON.parse(txt);
+      if (!d || !Array.isArray(d.sessions) || !d.plan) throw new Error('format');
+      if (!confirm(`Restore ${d.sessions.length} sesi dari backup? Data di iPhone ini sekarang akan diganti.`)) return;
+      S = {...fresh(), ...d}; save(); toast('Data berhasil dipulihkan'); render();
+    }).catch(() => alert('File ini bukan backup PPL Log yang valid.'));
+    file.value = '';
+  };
+}
+async function backup() {
+  const name = 'ppllog-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  const blob = new Blob([JSON.stringify(S)], {type: 'application/json'});
+  const f = new File([blob], name, {type: 'application/json'});
+  try {
+    if (navigator.canShare && navigator.canShare({files: [f]})) { await navigator.share({files: [f], title: 'Backup PPL Log'}); return; }
+  } catch (e) { if (e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+render();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
