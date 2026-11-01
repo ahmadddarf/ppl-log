@@ -577,6 +577,8 @@ function settings() {
     <h2>Backup data</h2><div class="muted small">Data hanya tersimpan di iPhone ini. Backup rutin, simpan filenya ke Files/iCloud.</div>
     <div class="row" style="margin-top:8px"><button class="grow" id="exp">⬇️ Backup</button><button class="grow" id="imp">⬆️ Restore</button></div>
     <input type="file" id="file" accept="application/json,.json" style="display:none">
+    <h2>Reset</h2><div class="muted small">Hapus semua sesi, daftar gerakan buatan sendiri, dan pengaturan. App kembali seperti baru dipasang.</div>
+    <button class="danger" style="width:100%;margin-top:8px;border:1px solid var(--danger)" id="reset">🗑️ Hapus semua data &amp; reset</button>
     <div class="muted small" style="margin-top:24px;text-align:center">PPL Log · ${S.sessions.length} sesi tersimpan · berjalan offline</div>`;
   const setRest = d => { S.rest = Math.min(300, Math.max(30, S.rest + d)); save(); render(); };
   document.getElementById('rm').onclick = () => setRest(-15);
@@ -598,6 +600,13 @@ function settings() {
   document.getElementById('resetPlan').onclick = () => {
     if (!confirm(`Kembalikan daftar ${TYPES[editType].name} ke bawaan?`)) return;
     S.plan[editType] = [...DEFAULT_PLAN[editType]]; save(); render();
+  };
+  document.getElementById('reset').onclick = () => {
+    if (!confirm(`Hapus SEMUA data (${S.sessions.length} sesi, daftar gerakan, pengaturan)? Tidak bisa dibatalkan. Lakukan Backup dulu kalau masih perlu.`)) return;
+    if (!confirm('Yakin? Ini terakhir kali ditanya.')) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    S = fresh(); lastResult = null; editType = 'push'; progEx = null; tickRest();
+    toast('Data direset. App kembali ke kondisi awal.'); go('home');
   };
   document.getElementById('exp').onclick = backup;
   const file = document.getElementById('file');
