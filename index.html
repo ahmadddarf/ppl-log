@@ -24,6 +24,15 @@ body{padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset
 button{font:inherit;color:inherit;border:0;background:var(--card2);border-radius:12px;padding:12px 16px;cursor:pointer}
 button:active{opacity:.7}
 button:disabled{opacity:.3}
+#back{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:12px;width:48px;height:48px;padding:0;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;z-index:7;box-shadow:0 4px 14px rgba(0,0,0,.55)}
+#back svg{width:26px;height:26px;stroke:#111;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+body.hasBack,body.hasUpd{padding-top:calc(env(safe-area-inset-top) + 70px)}
+body.hasBack #back{display:flex}
+#upd{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:12px;right:12px;height:48px;display:none;align-items:center;gap:10px;padding:0 6px 0 14px;background:var(--ok);color:#111;font-weight:700;border-radius:24px;z-index:8;box-shadow:0 4px 14px rgba(0,0,0,.55)}
+body.hasBack #upd{left:68px}
+body.hasUpd #upd{display:flex}
+#upd span{flex:1;font-size:14px}
+#upd button{background:#111;color:var(--text);padding:8px 14px;border-radius:20px;font-size:14px}
 button.primary{background:var(--accent);color:#111;font-weight:700}
 button.ghost{background:transparent;color:var(--muted);padding:8px 4px}
 button.danger{background:transparent;color:var(--danger)}
@@ -99,6 +108,8 @@ details summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
+<button id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div id="upd"><span>Versi baru tersedia</span><button id="updBtn">Muat ulang</button></div>
 <div id="app"></div>
 <div id="rest"><div class="grow"><div class="small muted">Istirahat</div><div class="t" id="restT">1:30</div></div>
   <button id="restPlus">+15 dtk</button><button id="restSkip">Lewati</button></div>
@@ -360,10 +371,23 @@ setInterval(() => {
 let view = S.active ? 'workout' : 'home', curEx = null, lastResult = null, editType = 'push', progEx = null;
 const app = document.getElementById('app');
 function go(v, arg) { view = v; if (v === 'exercise') curEx = arg; render(); scrollTo(0, 0); }
+function back() { if (view === 'exercise') go('workout'); else if (view !== 'home') go('home'); }
+document.getElementById('back').onclick = back;
+document.getElementById('updBtn').onclick = () => location.reload();
+// iOS home-screen apps have no back gesture: swipe right from the left screen edge goes back
+let edge = null;
+addEventListener('touchstart', e => { const t = e.touches[0]; edge = t.clientX <= 28 ? {x: t.clientX, y: t.clientY} : null; }, {passive: true});
+addEventListener('touchend', e => {
+  if (!edge) return;
+  const t = e.changedTouches[0], dx = t.clientX - edge.x, dy = Math.abs(t.clientY - edge.y);
+  edge = null;
+  if (dx > 70 && dx > dy * 2) back();
+}, {passive: true});
 
 function render() {
   document.getElementById('nav').style.display = ['workout', 'exercise'].includes(view) ? 'none' : 'flex';
   document.body.classList.toggle('noNav', ['workout', 'exercise'].includes(view));
+  document.body.classList.toggle('hasBack', view !== 'home');
   const t = S.active ? S.active.type : null;
   document.documentElement.style.setProperty('--accent', t ? TYPES[t].color : 'var(--push)');
   ({home, workout, exercise, done, history, progress, settings})[view]();
@@ -415,7 +439,7 @@ function entryFor(id) {
 function workout() {
   const a = S.active; if (!a) return go('home');
   const T = TYPES[a.type];
-  let h = `<div class="top"><button class="ghost" id="menu">‹ Menu</button><div class="muted" style="font-variant-numeric:tabular-nums">⏱ <span id="elapsed">${fmtDur(Date.now() - a.start)}</span></div></div>
+  let h = `<div class="top" style="justify-content:flex-end"><div class="muted" style="font-variant-numeric:tabular-nums">⏱ <span id="elapsed">${fmtDur(Date.now() - a.start)}</span></div></div>
     <h1 style="color:${T.color}">${T.name}</h1><div class="muted">${T.sub} · ketuk gerakan untuk mencatat</div>`;
   a.order.forEach(id => {
     const prev = lastSets(id), e = a.ex[id], n = e ? e.sets.filter(s => s.done).length : 0;
@@ -428,7 +452,6 @@ function workout() {
   app.innerHTML = h;
   app.querySelectorAll('svg[data-fig]').forEach(s => mountFig(s, s.dataset.fig));
   app.querySelectorAll('.exitem').forEach(b => b.onclick = () => go('exercise', b.dataset.id));
-  document.getElementById('menu').onclick = () => go('home');
   document.getElementById('note').oninput = e => { a.note = e.target.value; save(); };
   document.getElementById('cancel').onclick = () => {
     if (!confirm('Batalkan workout ini? Semua set di sesi ini tidak akan disimpan.')) return;
@@ -442,7 +465,7 @@ function exercise() {
   const id = curEx, info = exInfo(id), e = entryFor(id), bw = !!info.bw, prev = lastSets(id);
   save();
   const i = a.order.indexOf(id), next = a.order[i + 1];
-  app.innerHTML = `<div class="top"><button class="ghost" id="back">‹ Daftar gerakan</button><div class="muted">${i + 1}/${a.order.length}</div></div>
+  app.innerHTML = `<div class="top" style="justify-content:flex-end"><div class="muted">${i + 1}/${a.order.length}</div></div>
     <h1>${esc(info.name)}</h1>
     <svg class="hero" id="hero"></svg>
     ${info.cue ? `<div class="cue">${esc(info.cue)}</div>` : ''}
@@ -453,7 +476,6 @@ function exercise() {
     <div class="muted small" style="margin:8px 0 14px">Ketuk ✓ setelah menyelesaikan set. Timer istirahat ${S.rest} detik akan berjalan otomatis.</div>
     <button class="primary" style="width:100%" id="next">${next ? 'Berikutnya: ' + esc(exName(next)) + ' ›' : 'Kembali ke daftar ›'}</button>`;
   mountFig(document.getElementById('hero'), id);
-  document.getElementById('back').onclick = () => go('workout');
   document.getElementById('next').onclick = () => next ? go('exercise', next) : go('workout');
   document.getElementById('setWheel').appendChild(wheel(SETS, e.sets.length, n => {
     if (n === e.sets.length) return;
@@ -634,7 +656,14 @@ async function backup() {
 }
 
 render();
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'update') document.body.classList.add('hasUpd'); });
+  // The worker compares fresh files with its cached copy and messages us when they differ.
+  const checkUpdate = () => { if (navigator.onLine) fetch('index.html').catch(() => {}); };
+  checkUpdate();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+}
 </script>
 </body>
 </html>
