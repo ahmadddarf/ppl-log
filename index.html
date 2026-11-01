@@ -5,192 +5,270 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="PPL Log">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#e9ecff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
 <title>PPL Log</title>
 <style>
+@font-face{font-family:'Archivo Black';src:url(fonts/archivo-black-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Mono';src:url(fonts/ibm-plex-mono-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Mono';src:url(fonts/ibm-plex-mono-700.woff2) format('woff2');font-weight:700;font-display:swap}
 :root{
-  color-scheme:dark;
-  --accent:#7dd3fc;--accent2:#38bdf8;--ink:#041824;
-  --text:#f4f9fd;--muted:#8da2b3;--danger:#ff7b7b;--ok:var(--accent);
-  --bg:#000;--line:rgba(255,255,255,.12);--card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);
-  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
-  --glass-bg:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.04));
-  --glass-edge:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(255,255,255,.04),0 12px 32px -14px rgba(0,0,0,.9);
+  --bg:#e9ecff;--card:#fff;--ink:#000;--muted:#4b4b5c;--pink:#ff4fa3;--blue:#2f5bff;--yellow:#ffe14d;--soft:#f3f4ff;
+  --line:3px solid #000;--sh:4px 4px 0 #000;--r:10px;--r2:7px;
+  --display:'Archivo Black','Arial Black',Impact,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --push:var(--pink);--pull:var(--blue);--leg:var(--yellow);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{background:#000}
-html,body{margin:0;color:var(--text);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body{padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 112px);touch-action:manipulation;-webkit-user-select:none;user-select:none;min-height:100vh;overflow-x:hidden}
-
-/* ambient light behind the glass */
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#000}
-.bg i{position:absolute;border-radius:50%;width:90vmax;height:90vmax;background:radial-gradient(circle,rgba(125,211,252,.30),rgba(125,211,252,0) 68%)}
-.bg i:nth-child(1){top:-48vmax;left:-38vmax;animation:drift1 24s ease-in-out infinite alternate}
-.bg i:nth-child(2){bottom:-52vmax;right:-42vmax;opacity:.75;background:radial-gradient(circle,rgba(56,189,248,.28),rgba(56,189,248,0) 68%);animation:drift2 30s ease-in-out infinite alternate}
-.bg i:nth-child(3){top:38%;left:35%;width:46vmax;height:46vmax;opacity:.3;animation:drift3 36s ease-in-out infinite alternate}
-@keyframes drift1{to{transform:translate(18vmax,14vmax) scale(1.15)}}
-@keyframes drift2{to{transform:translate(-16vmax,-12vmax) scale(1.2)}}
-@keyframes drift3{to{transform:translate(-14vmax,10vmax) scale(.8)}}
-
-button{font:inherit;color:inherit;border:1px solid rgba(255,255,255,.14);background:var(--glass-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);border-radius:14px;padding:12px 16px;cursor:pointer;transition:transform .3s var(--spring),background .25s,opacity .2s,border-color .25s}
-button:active{transform:scale(.95)}
-button:disabled{opacity:.3}
-button.primary{background:linear-gradient(180deg,#b9e8ff,#5cc4f8);color:var(--ink);font-weight:700;border-color:rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 26px -6px rgba(94,196,248,.6)}
-button.ghost{background:none;border:0;box-shadow:none;color:var(--muted);padding:8px 4px}
-button.danger{background:rgba(255,123,123,.08);border-color:rgba(255,123,123,.35);color:var(--danger);box-shadow:none}
-
-h1{font-size:32px;line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:14px 0 6px;background:linear-gradient(180deg,#fff 30%,#a9e0fb);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-h2{font-size:18px;font-weight:700;margin:26px 2px 10px}
+html{background:var(--bg)}
+html,body{margin:0;color:var(--ink);font:15px/1.4 var(--mono)}
+body{padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 100px);min-height:100vh;touch-action:manipulation;-webkit-user-select:none;user-select:none;overflow-x:hidden;
+  background-image:radial-gradient(rgba(0,0,0,.13) 1px,transparent 1.3px);background-size:22px 22px}
+button{font:700 15px/1.2 var(--mono);color:var(--ink);background:var(--card);border:var(--line);border-radius:var(--r2);box-shadow:var(--sh);padding:12px 14px;cursor:pointer;transition:transform .07s,box-shadow .07s}
+button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #000}
+button:disabled{opacity:.35;box-shadow:none}
+button.pk{background:var(--pink)}
+button.bl{background:var(--blue);color:#fff}
+button.ye{background:var(--yellow)}
+button.big{width:100%;font:400 19px/1.1 var(--display);text-transform:uppercase;padding:16px;letter-spacing:.02em}
+button.ghost{background:none;border:0;box-shadow:none;padding:8px 2px;text-decoration:underline;font-weight:400}
+button.ghost:active{transform:none}
+button.danger{background:#fff;color:#d10045}
+h1{font:400 30px/1.02 var(--display);text-transform:uppercase;margin:10px 0 6px;letter-spacing:-.01em;overflow-wrap:anywhere}
+h2{font:400 18px/1.1 var(--display);text-transform:uppercase;margin:22px 0 10px}
+.small{font-size:12px}
 .muted{color:var(--muted)}
-.small{font-size:13px}
 .row{display:flex;align-items:center;gap:10px}
 .grow{flex:1;min-width:0}
-.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-
-/* glass surfaces */
-.card,.big,.exitem,details,.cue,.herobox,.chartbox,.stat div,.list-edit .row,.pr{
-  position:relative;background:var(--glass-bg);border:1px solid rgba(255,255,255,.13);box-shadow:var(--glass-edge);
-  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
-.card::after,.big::after,.exitem::after,details::after,.cue::after,.herobox::after,.chartbox::after,.stat div::after,.list-edit .row::after,.pr::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s;
-  background:radial-gradient(200px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.2),transparent 70%)}
-.lit::after{opacity:1}
-.card{border-radius:20px;padding:14px;margin:10px 0}
-.cue{border-radius:18px;padding:12px 14px;margin:10px 0;color:#d6e4ee}
-details{border-radius:18px;margin:8px 0;padding:12px 14px}
-details summary{list-style:none;cursor:pointer}
-details summary::-webkit-details-marker{display:none}
-details[open]{border-color:rgba(125,211,252,.35)}
-.list-edit .row{border-radius:14px;padding:8px 10px;margin:6px 0}
-.list-edit button{padding:8px 11px}
-.pr{border-radius:16px;padding:10px 12px;margin:6px 0;border-color:rgba(125,211,252,.45);background:linear-gradient(145deg,rgba(125,211,252,.2),rgba(125,211,252,.05))}
-.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
-.stat div{border-radius:18px;padding:14px 4px}
-.stat b{display:block;font-size:26px}
-
-/* home cards */
-.big{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px;margin:12px 0;border-radius:26px}
-.big .ic{flex:none;width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:rgba(125,211,252,.14);border:1px solid rgba(125,211,252,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 26px -4px rgba(125,211,252,.55)}
-.big .ic svg{width:28px;height:28px;stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.big b{display:block;font-size:28px;letter-spacing:.06em}
-.big.next{border-color:rgba(125,211,252,.5);box-shadow:var(--glass-edge),0 0 36px -10px rgba(125,211,252,.55)}
-.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.02em;padding:3px 9px;border-radius:99px;background:rgba(125,211,252,.18);border:1px solid rgba(125,211,252,.45);color:var(--accent);vertical-align:middle}
-
-/* exercise list */
-.exitem{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px;margin:8px 0;border-radius:22px}
-.exitem svg{width:72px;height:70px;flex:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:15px}
-.exitem .name{font-weight:600}
-.done-mark{color:var(--accent);font-weight:700;white-space:nowrap;background:rgba(125,211,252,.14);border:1px solid rgba(125,211,252,.4);border-radius:99px;padding:3px 10px;font-size:13px}
-
-/* animated figures */
-svg.fig .floor{stroke:rgba(255,255,255,.16);stroke-width:1.5}
-svg.fig .prop{stroke:rgba(255,255,255,.38);stroke-width:2;fill:none}
-svg.fig .prop rect{fill:rgba(255,255,255,.2)}
-svg.fig path,svg.fig line.torso{stroke:#fff;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
-svg.fig .back{opacity:.4}
-svg.fig circle.head{fill:#fff}
-svg.fig .db{fill:#000;stroke:var(--accent);stroke-width:2.4}
-.herobox{border-radius:26px;padding:10px;margin:10px 0;overflow:hidden}
-.herobox::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 110%,rgba(125,211,252,.22),transparent 65%);pointer-events:none}
-.hero{display:block;position:relative;width:100%;height:auto;max-height:230px}
-
-/* wheels */
-.wheel-wrap{position:relative;height:120px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 8px rgba(0,0,0,.5)}
-.wheel-wrap::before{content:"";position:absolute;left:4px;right:4px;top:39px;height:40px;border-radius:11px;background:rgba(125,211,252,.14);border:1px solid rgba(125,211,252,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 0 18px -4px rgba(125,211,252,.5);pointer-events:none}
-.wheel{height:118px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent)}
-.wheel::-webkit-scrollbar{display:none}
-.wheel .pad{height:40px}
-.wheel .it{height:40px;line-height:40px;text-align:center;font-size:21px;color:rgba(255,255,255,.3);scroll-snap-align:center;font-variant-numeric:tabular-nums;transition:color .2s,transform .25s var(--spring),text-shadow .2s}
-.wheel .it.near{color:rgba(255,255,255,.6);transform:scale(1.05)}
-.wheel .it.sel{color:#fff;font-weight:700;transform:scale(1.2);text-shadow:0 0 16px rgba(125,211,252,.8)}
-.setrow{display:grid;grid-template-columns:48px 1fr 1fr 56px;gap:8px;align-items:center;margin:8px 0}
-.setrow.bw{grid-template-columns:48px 1fr 56px}
-.setrow .lbl{font-weight:700;color:var(--muted);font-size:14px;text-align:center}
-.tick{height:56px;width:56px;padding:0;font-size:26px;border-radius:18px;color:var(--muted)}
-.tick.on{background:linear-gradient(180deg,#b9e8ff,#5cc4f8);color:var(--ink);border-color:rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 24px -2px rgba(94,196,248,.7)}
-.tick.pop{animation:pop .55s var(--spring)}
-@keyframes pop{0%{transform:scale(.7)}55%{transform:scale(1.22)}100%{transform:scale(1)}}
-.colhead{display:grid;grid-template-columns:48px 1fr 1fr 56px;gap:8px;font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
-.colhead.bw{grid-template-columns:48px 1fr 56px}
-.setcount{display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center}
-
-/* floating nav pill */
-nav{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 12px);width:min(calc(100% - 32px),420px);transform:translateX(-50%);z-index:5;transition:transform .55s var(--spring),opacity .3s}
-nav.hide{transform:translate(-50%,160%);opacity:0;pointer-events:none}
-nav .pill{position:relative;display:flex;padding:6px;border-radius:32px;background:rgba(14,22,30,.5);border:1px solid rgba(255,255,255,.16);box-shadow:var(--glass-edge);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%)}
-nav .ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:26px;background:rgba(125,211,252,.16);border:1px solid rgba(125,211,252,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 20px -4px rgba(125,211,252,.55);transition:transform .5s var(--spring)}
-nav button{position:relative;z-index:1;flex:1;background:none;border:0;box-shadow:none;font-size:11px;color:var(--muted);padding:8px 0 7px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .3s,transform .3s var(--spring)}
-nav button svg{width:23px;height:23px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--accent)}
-
-/* back button, update banner, toast, rest timer */
-#back{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:12px;width:48px;height:48px;padding:0;border-radius:50%;background:rgba(125,211,252,.2);border:1px solid rgba(125,211,252,.55);display:none;align-items:center;justify-content:center;z-index:7;-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 24px -2px rgba(125,211,252,.5),0 6px 16px rgba(0,0,0,.5)}
-#back svg{width:26px;height:26px;stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
-body.hasBack,body.hasUpd{padding-top:calc(env(safe-area-inset-top) + 70px)}
-body.hasBack #back{display:flex;animation:backin .45s var(--spring)}
-@keyframes backin{from{opacity:0;transform:translateX(-18px) scale(.8)}}
-#upd{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:12px;right:12px;height:48px;display:none;align-items:center;gap:10px;padding:0 6px 0 16px;border-radius:24px;z-index:8;background:rgba(14,22,30,.55);border:1px solid rgba(125,211,252,.5);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--glass-edge),0 0 26px -6px rgba(125,211,252,.5)}
-body.hasBack #upd{left:68px}
-body.hasUpd #upd{display:flex;animation:rise .5s var(--spring)}
-#upd span{flex:1;font-size:14px;font-weight:600;color:var(--accent)}
-#upd button{background:linear-gradient(180deg,#b9e8ff,#5cc4f8);color:var(--ink);border:0;font-weight:700;padding:8px 14px;border-radius:20px;font-size:14px}
-#toast{position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top) + 10px);border-radius:22px;padding:14px;text-align:center;font-weight:600;color:var(--accent);z-index:9;background:rgba(14,22,30,.6);border:1px solid rgba(125,211,252,.5);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--glass-edge),0 0 26px -6px rgba(125,211,252,.5);opacity:0;transform:translateY(-20px) scale(.96);pointer-events:none;transition:opacity .3s,transform .5s var(--spring)}
-#toast.show{opacity:1;transform:none}
-#rest{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 92px);display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:28px;z-index:6;background:rgba(14,22,30,.55);border:1px solid rgba(125,211,252,.35);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);box-shadow:var(--glass-edge),0 0 34px -8px rgba(125,211,252,.5);opacity:0;transform:translateY(26px) scale(.95);pointer-events:none;transition:opacity .35s var(--ease),transform .55s var(--spring)}
-#rest.show{opacity:1;transform:none;pointer-events:auto}
-#rest .t{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
-#rest button{padding:10px 12px}
-body.noNav #rest{bottom:calc(env(safe-area-inset-bottom) + 16px)}
-.ring{width:48px;height:48px;flex:none;transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:4}
-.ring .trk{stroke:rgba(255,255,255,.12)}
-.ring .bar{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:0;transition:stroke-dashoffset .35s linear;filter:drop-shadow(0 0 4px rgba(125,211,252,.8))}
-
-/* forms */
-textarea,select,input[type=text]{width:100%;font:inherit;color:var(--text);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px;-webkit-user-select:text;user-select:text;outline:0;transition:border-color .25s,box-shadow .25s}
-textarea:focus,select:focus,input[type=text]:focus{border-color:rgba(125,211,252,.7);box-shadow:0 0 0 3px rgba(125,211,252,.18)}
+.top{display:flex;justify-content:space-between;align-items:center;min-height:20px}
+.card{background:var(--card);border:var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:12px}
+.sticker{display:inline-block;font:700 11px/1 var(--mono);text-transform:uppercase;padding:5px 7px;border:2.5px solid #000;border-radius:5px;background:var(--yellow);transform:rotate(-4deg);box-shadow:2px 2px 0 #000;white-space:nowrap}
+.bar{height:16px;border:var(--line);border-radius:6px;background:#fff;overflow:hidden}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--pink) 0 8px,#ff7dbd 8px 16px);border-right:3px solid #000;transition:width .6s cubic-bezier(.3,1.4,.5,1)}
+textarea,select,input[type=text]{width:100%;font:15px var(--mono);color:#000;background:#fff;border:var(--line);border-radius:var(--r2);padding:12px;box-shadow:var(--sh);-webkit-user-select:text;user-select:text;outline:0}
+textarea:focus,select:focus,input[type=text]:focus{background:#fffbe0}
 textarea{min-height:70px;resize:vertical}
-.seg{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:3px;gap:3px}
-.seg button{flex:1;padding:9px 0;background:transparent;border:1px solid transparent;box-shadow:none;color:var(--muted)}
-.seg button.on{background:rgba(125,211,252,.16);border-color:rgba(125,211,252,.4);color:var(--accent);font-weight:700}
+label.lb{display:block;font:400 13px var(--display);text-transform:uppercase;margin:18px 0 8px}
 
-/* chart and finish screen */
-.chartbox{border-radius:22px;padding:6px;margin:8px 0}
-.chart{display:block;width:100%;height:180px}
-.chart .ln{fill:none;stroke:var(--accent);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s var(--ease) .15s forwards;filter:drop-shadow(0 0 5px rgba(125,211,252,.7))}
-.chart .area{opacity:0;animation:fadein .9s ease .6s forwards}
-.chart .dot{fill:var(--accent);transform-box:fill-box;transform-origin:center;animation:dotin .5s var(--spring) both}
-.chart text{fill:var(--muted);font-size:10px}
-@keyframes draw{to{stroke-dashoffset:0}}
-@keyframes fadein{to{opacity:1}}
-@keyframes dotin{from{transform:scale(0)}}
-.burst{width:84px;height:84px;margin:14px 0 4px}
-.burst circle,.burst path{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:150;stroke-dashoffset:150;animation:draw2 .9s var(--ease) .1s forwards}
-.burst path{animation-delay:.5s;animation-duration:.5s}
-.burst{filter:drop-shadow(0 0 10px rgba(125,211,252,.7))}
-@keyframes draw2{to{stroke-dashoffset:0}}
+/* HUD: level + XP */
+.hud{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;text-align:left}
+.lv{font:400 15px/1 var(--display);background:var(--yellow);border:2.5px solid #000;border-radius:5px;padding:6px 7px;white-space:nowrap}
+.hud .bar{flex:1;height:14px}
+.hud small{font-size:11px;white-space:nowrap}
 
-/* page transitions: children rise in one after another */
-#app.fwd>*{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms)}
-#app.bck>*{animation:slideback .55s var(--ease) both;animation-delay:calc(var(--i,0) * 35ms)}
-@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}}
-@keyframes slideback{from{opacity:0;transform:translateX(-26px) scale(.985)}}
+/* week strip */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:12px 0 8px}
+.day{border:2.5px solid #000;border-radius:7px;background:#fff;text-align:center;padding:5px 0 4px;font-size:11px;line-height:1.15;min-width:0}
+.day b{display:block;font:400 15px/1.1 var(--display)}
+.day.today{box-shadow:3px 3px 0 #000;outline:3px solid var(--pink);outline-offset:1px}
+.day.push{background:var(--pink)}.day.pull{background:var(--blue);color:#fff}.day.leg{background:var(--yellow)}
+.day.future{opacity:.45}
+
+/* workout type rows */
+.type{display:flex;align-items:center;gap:12px;width:100%;margin:12px 0;padding:12px;text-align:left;position:relative}
+.type .tic{flex:none;width:52px;height:52px;border:var(--line);border-radius:8px;display:grid;place-items:center;background:var(--tc)}
+.type .tic svg{width:28px;height:28px;stroke:#000;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.type.pull .tic svg{stroke:#fff}
+.type b{display:block;font:400 25px/1 var(--display);text-transform:uppercase}
+.type .sub{font-size:12px;color:var(--muted);font-weight:400}
+.type .when{font-size:11px;font-weight:400}
+.type.next{background:var(--tc)}
+.type.next.pull{color:#fff}.type.next.pull .sub{color:#dfe5ff}
+.type.next .tic{background:#fff}.type.next.pull .tic svg{stroke:#000}
+.type .sticker{position:absolute;right:8px;top:-12px}
+
+/* tiles (exercise grid) */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.tile{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;position:relative}
+.tile svg{display:block;width:100%;height:auto;aspect-ratio:100/91;background:var(--soft);border-bottom:var(--line)}
+.tile .tx{padding:8px 9px 10px;display:grid;gap:3px}
+.tile .nm{font:700 13px/1.2 var(--mono)}
+.tile .ls{font-size:11px;font-weight:400;color:var(--muted)}
+.tile.done{background:var(--yellow)}
+.tile.done svg{background:#fff3a6}
+.tile .sticker{position:absolute;top:8px;right:8px;background:#fff}
+.tile.done .sticker{background:var(--pink)}
+.ttl{display:inline-block;background:var(--tc);border:var(--line);box-shadow:var(--sh);border-radius:8px;padding:6px 12px 4px;margin:6px 0 10px;font:400 34px/1 var(--display)}
+.ttl.pull{color:#fff}
+
+/* figures */
+svg.fig .floor{stroke:#000;stroke-width:1.5;opacity:.35}
+svg.fig .prop{stroke:#000;stroke-width:2.2;fill:none}
+svg.fig .prop rect{fill:#c9cdea}
+svg.fig path,svg.fig line.torso{stroke:#000;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round;fill:none}
+svg.fig .back{opacity:.35}
+svg.fig circle.head{fill:#000}
+svg.fig .db{fill:var(--pink);stroke:#000;stroke-width:2.2}
+
+/* log one set */
+.hero{padding:0;overflow:hidden}
+.hero svg{display:block;width:100%;height:150px;background:var(--soft)}
+.setchips{display:flex;gap:8px;margin:12px 0}
+.setchips button{flex:1;padding:10px 0;font:400 16px var(--display)}
+.setchips button.cur{background:var(--yellow);outline:3px solid var(--pink);outline-offset:2px}
+.setchips button.done{background:#000;color:#fff}
+.setchips button.add{flex:.7;background:var(--soft)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nums.one{grid-template-columns:1fr}
+.num{display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding:8px;text-align:center}
+.num .pm{font:400 26px/1 var(--display);padding:8px 0;box-shadow:3px 3px 0 #000}
+.num .val{font:400 66px/1 var(--display);padding:6px 0 0;touch-action:none;cursor:ns-resize;font-variant-numeric:tabular-nums}
+.num .unit{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin-top:-2px}
+.num .val.bump{animation:bump .18s}
+@keyframes bump{50%{transform:scale(1.12)}}
+.setlabel{font:400 14px var(--display);text-transform:uppercase;text-align:center;margin:4px 0 0}
+details.cue{margin-top:14px}
+details.cue summary{font:400 13px var(--display);text-transform:uppercase;list-style:none;cursor:pointer}
+details.cue summary::-webkit-details-marker{display:none}
+details.cue p{margin:8px 0 0;font-size:13px;line-height:1.5}
+.xpf{position:fixed;z-index:30;font:400 22px var(--display);color:#000;background:var(--yellow);border:2.5px solid #000;border-radius:6px;padding:3px 8px;box-shadow:3px 3px 0 #000;pointer-events:none;animation:xpf 1.1s ease-out forwards}
+@keyframes xpf{0%{transform:translate(-50%,0) scale(.6);opacity:0}15%{transform:translate(-50%,-10px) scale(1.15);opacity:1}100%{transform:translate(-50%,-70px) scale(1);opacity:0}}
+
+/* full-screen rest timer */
+#rest{position:fixed;inset:0;z-index:20;display:none;background:var(--blue);color:#fff;
+  background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.3px);background-size:22px 22px;
+  padding:calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 24px)}
+#rest.show{display:flex;animation:slidein .28s cubic-bezier(.3,1.3,.5,1)}
+@keyframes slidein{from{transform:translateY(40px);opacity:0}}
+.rin{margin:auto;width:100%;max-width:380px;display:grid;gap:18px;justify-items:center}
+.rin .lbl{font:400 26px var(--display);letter-spacing:.06em}
+.ring{--p:1;width:230px;height:230px;border-radius:50%;border:var(--line);box-shadow:6px 6px 0 #000;display:grid;place-items:center;background:conic-gradient(var(--yellow) calc(var(--p) * 360deg),#000 0)}
+.ring>div{width:176px;height:176px;border-radius:50%;background:#fff;color:#000;border:var(--line);display:grid;place-content:center;text-align:center}
+.ring b{font:400 58px/1 var(--display);font-variant-numeric:tabular-nums}
+.ring small{font-size:12px;color:var(--muted)}
+.rin .row{width:100%}
+.rin .row button{flex:1;font:400 20px var(--display)}
+.rin .card{width:100%;color:#000}
+.rin .card small{display:block;font:700 11px var(--mono);letter-spacing:.12em;color:var(--muted)}
+.rin .card b{font:400 17px/1.15 var(--display);text-transform:uppercase}
+
+/* finish screen */
+.delta{text-align:center;padding:16px 12px}
+.delta b{display:block;font:400 54px/1 var(--display)}
+.delta.up{background:var(--pink)}
+.delta.down{background:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stats .card{text-align:center;padding:10px 4px}
+.stats b{display:block;font:400 22px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stats small{font-size:11px;color:var(--muted)}
+.cmp{display:grid;grid-template-columns:1fr auto auto 26px;gap:8px 10px;align-items:center;font-size:13px}
+.cmp .h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.cmp .n{font-variant-numeric:tabular-nums;text-align:right}
+.cmp .a{font:400 16px var(--display);text-align:center;border:2px solid #000;border-radius:4px;line-height:20px}
+.cmp .a.up{background:var(--pink)}.cmp .a.eq{background:#fff}.cmp .a.dn{background:var(--soft)}
+.cmp>.sep{grid-column:1/-1;border-top:2px dashed #000;height:0}
+.xpcard{background:var(--yellow)}
+.xpcard .big{font:400 34px/1 var(--display)}
+
+/* reward modal */
+#reward{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:20px}
+#reward.show{display:flex}
+.rcard{width:100%;max-width:360px;background:var(--yellow);border:var(--line);border-radius:12px;box-shadow:8px 8px 0 #000;padding:18px;position:relative;animation:rpop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rpop{from{transform:scale(.5) rotate(-12deg);opacity:0}to{transform:rotate(-1.5deg)}}
+.rcard{transform:rotate(-1.5deg)}
+.rcard h3{font:400 28px/1 var(--display);margin:0 0 6px}
+.rcard .why{display:inline-block;background:#000;color:#fff;font-weight:700;font-size:12px;padding:5px 8px;border-radius:4px}
+.rcard .fact{background:#fff;border:var(--line);border-radius:8px;padding:12px;margin:14px 0;font-size:14px;line-height:1.5}
+.rcard .fact small{display:block;font:400 12px var(--display);color:var(--pink);margin-bottom:4px;letter-spacing:.04em}
+.rcard .cf{position:absolute;width:12px;height:12px;border:2px solid #000;animation:cf .9s ease-out forwards}
+@keyframes cf{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--x),var(--y)) rotate(200deg);opacity:0}}
+
+/* history calendar */
+.calhd{display:flex;align-items:center;gap:10px}
+.calhd b{flex:1;text-align:center;font:400 20px var(--display);text-transform:uppercase}
+.calhd button{padding:8px 14px;font:400 18px var(--display)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:12px 0}
+.cal .wd{text-align:center;font-size:11px;font-weight:700;color:var(--muted)}
+.cal button{padding:5px 0 4px;min-height:46px;font:700 13px var(--mono);box-shadow:2px 2px 0 #000;display:flex;flex-direction:column;align-items:center;gap:3px;border-width:2.5px;border-radius:6px}
+.cal button.out{visibility:hidden}
+.cal button.sel{background:var(--yellow);outline:3px solid var(--pink);outline-offset:1px}
+.cal button.today{text-decoration:underline 3px}
+.cal .dots{display:flex;gap:2px}
+.cal .dots i{width:8px;height:8px;border:1.5px solid #000;border-radius:2px}
+i.push{background:var(--pink)}i.pull{background:var(--blue)}i.leg{background:var(--yellow)}
+.sess{margin:12px 0}
+.chip{display:inline-block;font:400 12px/1 var(--display);padding:5px 7px;border:2.5px solid #000;border-radius:5px;background:var(--tc);text-transform:uppercase}
+.chip.pull{color:#fff}
+
+/* progress */
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:9px 0;font:400 13px var(--display);box-shadow:2px 2px 0 #000}
+.seg button.on{background:#000;color:#fff}
+.chart{display:block;width:100%;height:auto}
+.chart .gl{stroke:#000;stroke-width:1;stroke-dasharray:3 4;opacity:.3}
+.chart .ar{fill:var(--pink);opacity:.35}
+.chart .ln{fill:none;stroke:#000;stroke-width:3.5;stroke-linejoin:round}
+.chart .pt{fill:var(--yellow);stroke:#000;stroke-width:2.5}
+.chart text{font:700 11px var(--mono);fill:#000}
+.chips{display:flex;gap:8px;margin:12px 0}
+.chips button{flex:1;padding:9px 0;font:700 13px var(--mono);box-shadow:2px 2px 0 #000}
+.chips button.on{background:var(--pink)}
+
+/* settings */
+.group{padding:0;overflow:hidden;margin:10px 0}
+.group button{display:flex;align-items:center;width:100%;border:0;border-bottom:2.5px solid #000;border-radius:0;box-shadow:none;text-align:left;padding:14px 12px;gap:10px;font-weight:700}
+.group button:last-child{border-bottom:0}
+.group button:active{transform:none;background:var(--yellow)}
+.group button .v{margin-left:auto;font-weight:400;color:var(--muted)}
+.grouplbl{font:700 11px var(--mono);letter-spacing:.12em;color:var(--muted);margin:20px 2px 0;text-transform:uppercase}
+.list-edit .row{margin:8px 0;padding:8px 10px}
+.list-edit button{padding:7px 10px;box-shadow:2px 2px 0 #000}
+
+/* badges + facts */
+.lvbig{display:flex;align-items:center;gap:14px}
+.lvbig .n{font:400 52px/1 var(--display);background:var(--yellow);border:var(--line);border-radius:10px;padding:10px 14px;box-shadow:var(--sh)}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge{padding:10px 6px;text-align:center;display:grid;gap:4px;justify-items:center}
+.badge .ic{width:40px;height:40px;border:2.5px solid #000;border-radius:50%;display:grid;place-items:center;font:400 18px var(--display);background:var(--pink)}
+.badge b{font:700 11px/1.2 var(--mono)}
+.badge small{font-size:10px;color:var(--muted);line-height:1.25}
+.badge.lock{background:transparent;border-style:dashed;box-shadow:none}
+.badge.lock .ic{background:#fff;border-style:dashed}
+.factlist .card{margin:10px 0;font-size:13px;line-height:1.5}
+.factlist small{display:block;font:400 12px var(--display);color:var(--pink)}
+
+/* nav, back, banner, toast */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;background:#fff;border-top:var(--line);padding:6px 6px calc(env(safe-area-inset-bottom) + 6px);transition:transform .25s}
+nav.hide{transform:translateY(110%)}
+nav button{flex:1;border:0;box-shadow:none;background:none;padding:6px 0 5px;font:700 10px var(--mono);display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:6px}
+nav button:active{transform:none}
+nav button svg{width:22px;height:22px;stroke:#000;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{background:var(--yellow);outline:2.5px solid #000}
+#back{position:fixed;top:calc(env(safe-area-inset-top) + 10px);left:12px;z-index:7;width:46px;height:46px;padding:0;display:none;place-items:center}
+#back svg{width:24px;height:24px;stroke:#000;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+body.hasBack,body.hasUpd{padding-top:calc(env(safe-area-inset-top) + 68px)}
+body.hasBack #back{display:grid}
+#upd{position:fixed;top:calc(env(safe-area-inset-top) + 10px);left:12px;right:12px;z-index:8;display:none;align-items:center;gap:10px;padding:6px 6px 6px 12px;background:var(--yellow);border:var(--line);border-radius:var(--r);box-shadow:var(--sh);font-weight:700;font-size:13px}
+body.hasBack #upd{left:70px}
+body.hasUpd #upd{display:flex}
+#upd span{flex:1}
+#upd button{padding:8px 10px;font-size:13px;box-shadow:2px 2px 0 #000}
+#toast{position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top) + 12px);z-index:50;background:#000;color:#fff;font-weight:700;border-radius:var(--r);padding:14px;text-align:center;box-shadow:4px 4px 0 var(--pink);display:none}
+#toast.show{display:block;animation:slidein .25s}
+
+/* page transitions */
+#app.fwd>*{animation:upin .32s cubic-bezier(.3,1.3,.5,1) both;animation-delay:calc(var(--i,0) * 30ms)}
+#app.bck>*{animation:lfin .28s ease-out both}
+@keyframes upin{from{opacity:0;transform:translateY(14px)}}
+@keyframes lfin{from{opacity:0;transform:translateX(-18px)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="bg"><i></i><i></i><i></i></div>
 <button id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
 <div id="upd"><span>Versi baru tersedia</span><button id="updBtn">Muat ulang</button></div>
 <div id="app"></div>
-<div id="rest"><svg class="ring" viewBox="0 0 44 44"><circle class="trk" cx="22" cy="22" r="18"/><circle class="bar" id="restBar" cx="22" cy="22" r="18"/></svg><div class="grow"><div class="small muted">Istirahat</div><div class="t" id="restT">1:30</div></div>
-  <button id="restPlus">+15 dtk</button><button id="restSkip">Lewati</button></div>
+<div id="rest"><div class="rin">
+  <div class="lbl">ISTIRAHAT</div>
+  <div class="ring" id="ring"><div><b id="restT">1:30</b><small>dari <span id="restTot">1:30</span></small></div></div>
+  <div class="row"><button id="restMinus">−15</button><button id="restPlus">+15</button></div>
+  <div class="card"><small>BERIKUTNYA</small><b id="restNext">Set 2</b></div>
+  <button class="ye big" id="restSkip">Lewati istirahat</button>
+</div></div>
+<div id="reward"></div>
 <div id="toast"></div>
 <nav id="nav"></nav>
 <script>
@@ -207,7 +285,7 @@ const DEFAULT_PLAN = {
   pull: ['bentrow', 'onerow', 'reardelt', 'superman', 'curl', 'hammer'],
   leg:  ['goblet', 'rdl', 'lunge', 'bss', 'bridge', 'calf'],
 };
-const REPS = range(5, 20), KGS = range(0, 20), SETS = range(1, 4);
+const REP_MIN = 5, REP_MAX = 20, KG_MIN = 0, KG_MAX = 20, SET_MAX = 4;
 
 /* Animated figure poses. Canvas 100x96, floor at y=88, figure faces right.
    hip:[x,y], t: torso angle (0 = upright, 90 = lying with head right),
@@ -264,8 +342,99 @@ for (const ex of Object.values(EX)) {
   ex.B = B;
 }
 
+/* ---------- game: XP, levels, badges, sport facts ---------- */
+const setXP = s => 10 + s.reps + s.kg;
+const XP_SESSION = 25, XP_PR = 50;
+const need = L => 50 * L * (L - 1); // total XP needed to reach level L
+const BADGES = [
+  {id: 'first', ic: '1', name: 'Langkah Pertama', desc: 'Selesaikan 1 workout', ok: s => s.sessions >= 1},
+  {id: 'trio', ic: 'P', name: 'Trio PPL', desc: 'Pernah Push, Pull, dan Leg', ok: s => s.types.push && s.types.pull && s.types.leg},
+  {id: 'ten', ic: '10', name: 'Rutin', desc: 'Selesaikan 10 workout', ok: s => s.sessions >= 10},
+  {id: 'fifty', ic: '50', name: 'Veteran', desc: 'Selesaikan 50 workout', ok: s => s.sessions >= 50},
+  {id: 'week3', ic: '7', name: 'Seminggu Penuh', desc: '3 workout dalam 7 hari', ok: s => s.best7 >= 3},
+  {id: 'pr1', ic: '★', name: 'Rekor Pertama', desc: 'Pecahkan 1 rekor', ok: s => s.prs >= 1},
+  {id: 'pr10', ic: '★', name: 'Pemburu Rekor', desc: 'Pecahkan 10 rekor', ok: s => s.prs >= 10},
+  {id: 'ton', ic: 'T', name: 'Satu Ton', desc: 'Total beban 1.000 kg', ok: s => s.kg >= 1000},
+  {id: 'ton10', ic: 'T', name: 'Sepuluh Ton', desc: 'Total beban 10.000 kg', ok: s => s.kg >= 10000},
+  {id: 'rep1k', ic: 'R', name: 'Seribu Repetisi', desc: 'Total 1.000 repetisi', ok: s => s.reps >= 1000},
+  {id: 'lv5', ic: '5', name: 'Level 5', desc: 'Capai level 5', ok: s => s.level >= 5},
+  {id: 'lv10', ic: '10', name: 'Level 10', desc: 'Capai level 10', ok: s => s.level >= 10},
+  {id: 'early', ic: '☀', name: 'Pagi Juara', desc: 'Workout sebelum jam 08.00', ok: s => s.early >= 1},
+  {id: 'night', ic: '☾', name: 'Burung Hantu', desc: 'Workout setelah jam 21.00', ok: s => s.night >= 1},
+];
+const FACTS = [
+  'Tubuh manusia punya lebih dari 600 otot rangka.',
+  'Gluteus maximus, otot bokong yang kamu latih saat glute bridge, adalah otot terbesar di tubuh.',
+  'Quadriceps di paha depan terdiri dari empat otot. Goblet squat melatih keempatnya.',
+  'Trisep punya tiga kepala dan membentuk sekitar dua pertiga massa lengan atas. Lengan besar dimulai dari trisep.',
+  'Bisep punya dua kepala. Hammer curl juga melatih brachialis yang ada di bawahnya.',
+  'Otot bahu (deltoid) punya tiga bagian: depan, samping, dan belakang. Lateral raise menyasar bagian samping.',
+  'Latissimus dorsi adalah salah satu otot terlebar di tubuh. Otot inilah yang bekerja saat kamu melakukan row.',
+  'Otot tumbuh terutama saat pemulihan, bukan saat latihan. Tidur cukup adalah bagian dari program.',
+  'Hormon pertumbuhan banyak dilepaskan saat tidur nyenyak.',
+  'Kenaikan kekuatan di minggu-minggu awal latihan sebagian besar datang dari saraf yang makin efisien, bukan otot yang membesar.',
+  'Rentang repetisi yang luas, kira-kira 6 sampai 30, bisa membangun otot asalkan setnya dikerjakan mendekati batas.',
+  'Melatih setiap otot dua kali seminggu cenderung lebih efektif untuk pertumbuhan otot dibanding sekali seminggu.',
+  'Pola Push/Pull/Leg yang dijalankan 6 hari seminggu membuat setiap kelompok otot terlatih dua kali.',
+  'Istirahat 2–3 menit antar set cenderung menghasilkan kekuatan lebih baik dibanding istirahat yang sangat singkat.',
+  'Meta-analisis menemukan manfaat protein untuk otot mulai mendatar di sekitar 1,6 gram per kg berat badan per hari.',
+  'Pegal otot setelah latihan (DOMS) biasanya memuncak 24–72 jam setelahnya.',
+  'Otot bisa menahan beban lebih berat saat menurunkan (fase eksentrik) daripada saat mengangkat.',
+  'Saat push-up standar, kamu mengangkat sekitar 64% berat badanmu. Dengan lutut di lantai, sekitar 49%.',
+  'Melatih satu sisi tubuh bisa sedikit menambah kekuatan sisi lainnya. Efek ini disebut cross-education.',
+  'Otot yang pernah terlatih lebih cepat kembali besar setelah berhenti latihan. Inti sel otot yang bertambah tetap tersimpan.',
+  'Otot tidak berubah menjadi lemak saat kamu berhenti latihan. Keduanya jaringan yang sama sekali berbeda.',
+  'Sekitar 75% massa otot adalah air.',
+  'Setelah usia 30, massa otot cenderung turun sekitar 3–8% per dekade tanpa latihan beban.',
+  'Latihan beban membantu meningkatkan kepadatan tulang.',
+  'Meta-analisis tahun 2022 mengaitkan 30–60 menit latihan kekuatan per minggu dengan risiko kematian yang lebih rendah.',
+  'Kreatin monohidrat termasuk suplemen yang paling banyak diteliti, dan terbukti membantu menambah kekuatan.',
+  'Kafein sekitar 3–6 mg per kg berat badan sebelum latihan bisa meningkatkan performa.',
+  'Kata "gymnasium" berasal dari bahasa Yunani gymnos, yang berarti telanjang. Atlet Yunani kuno berlatih tanpa pakaian.',
+  'Nama "dumbbell" berasal dari alat latihan abad ke-18 yang meniru tali lonceng gereja, tetapi tanpa bunyi.',
+  'Angkat besi sudah dipertandingkan sejak Olimpiade modern pertama di Athena tahun 1896.',
+  'Eddie Hall menjadi orang pertama yang deadlift 500 kg, pada tahun 2016.',
+  'Rekor deadlift 501 kg dibuat Hafþór Júlíus Björnsson pada tahun 2020.',
+  'Usain Bolt mencatat 9,58 detik untuk lari 100 meter di Berlin tahun 2009, dengan kecepatan puncak sekitar 44 km/jam.',
+  'Michael Phelps meraih 23 medali emas Olimpiade, terbanyak sepanjang sejarah.',
+  'Jarak maraton 42,195 km berasal dari Olimpiade London 1908.',
+  'Setiap kilogram otot membakar energi lebih banyak saat istirahat dibanding satu kilogram lemak, sekitar tiga kali lipat.',
+];
+
+function stats(list) {
+  const st = {sessions: list.length, sets: 0, reps: 0, kg: 0, prs: 0, xp: 0, types: {}, best7: 0, early: 0, night: 0};
+  const seen = {};
+  for (const s of list) {
+    st.types[s.type] = (st.types[s.type] || 0) + 1;
+    const h = new Date(s.start).getHours(); if (h < 8) st.early++; if (h >= 21) st.night++;
+    st.xp += XP_SESSION;
+    for (const e of s.entries) {
+      const prev = seen[e.ex] || [];
+      let pr = false;
+      for (const x of e.sets) {
+        st.sets++; st.reps += x.reps; st.kg += x.reps * x.kg; st.xp += setXP(x);
+        if (prev.length && !prev.some(p => p.kg >= x.kg && p.reps >= x.reps)) pr = true;
+      }
+      if (pr) { st.prs++; st.xp += XP_PR; }
+      seen[e.ex] = prev.concat(e.sets);
+    }
+  }
+  const t = list.map(s => s.start).sort((a, b) => a - b);
+  for (let i = 0, j = 0; i < t.length; i++) { while (t[i] - t[j] > 7 * 864e5) j++; st.best7 = Math.max(st.best7, i - j + 1); }
+  let L = 1; while (st.xp >= need(L + 1)) L++;
+  st.level = L; st.into = st.xp - need(L); st.span = need(L + 1) - need(L);
+  st.badges = BADGES.filter(b => b.ok(st)).map(b => b.id);
+  return st;
+}
+function pickFact() {
+  const left = FACTS.map((_, i) => i).filter(i => !S.facts.includes(i));
+  if (!left.length) return Math.floor(Math.random() * FACTS.length);
+  const i = left[Math.floor(Math.random() * left.length)];
+  S.facts.push(i); return i;
+}
+
 /* ---------- state ---------- */
-function fresh() { return {v: 1, rest: 90, plan: structuredClone(DEFAULT_PLAN), custom: {}, sessions: [], active: null, restEnd: 0}; }
+function fresh() { return {v: 1, rest: 90, plan: structuredClone(DEFAULT_PLAN), custom: {}, sessions: [], active: null, restEnd: 0, restTotal: 0, restNext: '', facts: []}; }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.sessions)) return {...fresh(), ...s}; } catch (e) {}
   return fresh();
@@ -273,68 +442,44 @@ function load() {
 let S = load();
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { alert('Gagal menyimpan data. Memori iPhone mungkin penuh. Segera lakukan Backup dari menu Pengaturan.'); }
+  catch (e) { alert('Gagal menyimpan data. Memori iPhone mungkin penuh. Segera lakukan Backup dari menu Atur.'); }
 }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
 /* ---------- helpers ---------- */
-function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
 function exInfo(id) { return EX[id] || S.custom[id] || {name: '(gerakan dihapus)'}; }
 function exName(id) { return exInfo(id).name; }
 function dayStart(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
-function ago(ts) {
-  const n = Math.round((dayStart(Date.now()) - dayStart(ts)) / 864e5);
-  return n <= 0 ? 'hari ini' : n === 1 ? 'kemarin' : n + ' hari lalu';
-}
-function fmtDate(ts) { return new Date(ts).toLocaleDateString('id-ID', {weekday: 'short', day: 'numeric', month: 'short'}) + ' · ' + new Date(ts).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}); }
+function ago(ts) { const n = Math.round((dayStart(Date.now()) - dayStart(ts)) / 864e5); return n <= 0 ? 'hari ini' : n === 1 ? 'kemarin' : n + ' hari lalu'; }
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}); }
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('id-ID', {weekday: 'short', day: 'numeric', month: 'short'}) + ' · ' + fmtTime(ts); }
 function fmtDur(ms) {
   const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = s % 60;
   return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0');
 }
+const num = n => n.toLocaleString('id-ID');
 function fmtSets(sets) {
   if (!sets || !sets.length) return '';
-  const kgs = [...new Set(sets.map(s => s.kg))];
-  const reps = sets.map(s => s.reps);
-  if (kgs.length === 1) {
-    const r = reps.every(x => x === reps[0]) ? sets.length + '×' + reps[0] : reps.join('/') + ' rep';
-    return r + (kgs[0] ? ' @ ' + kgs[0] + ' kg' : '');
-  }
+  const kgs = [...new Set(sets.map(s => s.kg))], reps = sets.map(s => s.reps);
+  if (kgs.length === 1) return (reps.every(x => x === reps[0]) ? sets.length + '×' + reps[0] : reps.join('/') + ' rep') + (kgs[0] ? ' @ ' + kgs[0] + ' kg' : '');
   return sets.map(s => s.reps + '×' + s.kg + 'kg').join(', ');
 }
-function lastSets(id) {
+const vol = sets => sets.reduce((n, s) => n + s.reps * (s.kg || 1), 0); // bodyweight sets count reps
+function lastSets(id, before = Infinity) {
   for (let i = S.sessions.length - 1; i >= 0; i--) {
+    if (S.sessions[i].start >= before) continue;
     const e = S.sessions[i].entries.find(e => e.ex === id);
     if (e) return e.sets;
   }
   return null;
 }
 function lastOfType(type) { for (let i = S.sessions.length - 1; i >= 0; i--) if (S.sessions[i].type === type) return S.sessions[i]; return null; }
+const ymd = ts => { const d = new Date(ts); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); };
 let toastTm;
-function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTm); toastTm = setTimeout(() => t.classList.remove('show'), 3500); }
-
-/* ---------- wheel picker (no typing) ---------- */
-const ROW = 40;
-function wheel(vals, cur, onChange) {
-  const wrap = document.createElement('div'); wrap.className = 'wheel-wrap';
-  const w = document.createElement('div'); w.className = 'wheel';
-  w.innerHTML = '<div class="pad"></div>' + vals.map(v => `<div class="it">${v}</div>`).join('') + '<div class="pad"></div>';
-  wrap.appendChild(w);
-  const items = w.querySelectorAll('.it');
-  let idx = Math.max(0, vals.indexOf(cur)), tm;
-  const mark = () => items.forEach((el, i) => { el.classList.toggle('sel', i === idx); el.classList.toggle('near', Math.abs(i - idx) === 1); });
-  mark();
-  let placed = false;
-  requestAnimationFrame(() => { w.scrollTop = idx * ROW; placed = true; });
-  w.addEventListener('scroll', () => {
-    if (!placed) return; // ignore the browser's own initial snap before we position the wheel
-    const i = Math.min(vals.length - 1, Math.max(0, Math.round(w.scrollTop / ROW)));
-    if (i !== idx) { idx = i; mark(); }
-    clearTimeout(tm); tm = setTimeout(() => onChange(vals[idx]), 150);
-  }, {passive: true});
-  items.forEach((el, i) => el.addEventListener('click', () => w.scrollTo({top: i * ROW, behavior: 'smooth'})));
-  return wrap;
-}
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTm); toastTm = setTimeout(() => t.classList.remove('show'), 3200); }
+const typeIcon = k => `<svg viewBox="0 0 24 24"><path d="${TYPES[k].icon}"/></svg>`;
 
 /* ---------- animated figures ---------- */
 const figs = [];
@@ -348,8 +493,8 @@ function ik(s, p, a, b, sign) {
 }
 const dirDown = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), Math.cos(r)]; };
 function pose(ex, p) {
-  const A = ex.A, B = ex.B, L = (a, b) => a + (b - a) * p, LV = (a, b) => [L(a[0], b[0]), L(a[1], b[1])];
-  const hip = LV(A.hip, B.hip), t = L(A.t, B.t) * Math.PI / 180, tl = ex.tl || 26;
+  const A = ex.A, B = ex.B, Lr = (a, b) => a + (b - a) * p, LV = (a, b) => [Lr(a[0], b[0]), Lr(a[1], b[1])];
+  const hip = LV(A.hip, B.hip), t = Lr(A.t, B.t) * Math.PI / 180, tl = ex.tl || 26;
   const sh = [hip[0] + tl * Math.sin(t), hip[1] - tl * Math.cos(t)];
   const eb = ex.eb || [1, 1], kb = ex.kb || [-1, -1], td = ex.td || 1;
   const out = {hip, sh, arms: [], legs: []};
@@ -359,7 +504,7 @@ function pose(ex, p) {
     const hp = ex.front ? [hip[0] + 4 * side, hip[1]] : hip;
     let el, hand;
     if (A['ha' + k]) {
-      const u = dirDown(L(A['ha' + k][0], B['ha' + k][0])), f = dirDown(L(A['ha' + k][1], B['ha' + k][1]));
+      const u = dirDown(Lr(A['ha' + k][0], B['ha' + k][0])), f = dirDown(Lr(A['ha' + k][1], B['ha' + k][1]));
       el = [s[0] + 13 * u[0], s[1] + 13 * u[1]]; hand = [el[0] + 12 * f[0], el[1] + 12 * f[1]];
     } else [el, hand] = ik(s, LV(A['h' + k], B['h' + k]), 13, 12, eb[i]);
     out.arms.push([s, el, hand]);
@@ -373,10 +518,10 @@ function pose(ex, p) {
   return out;
 }
 const pts = a => 'M' + a.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
-function mountFig(svg, id) {
+function mountFig(svg, id, vb = '0 0 100 96') {
   const ex = EX[id];
-  svg.setAttribute('viewBox', '0 0 100 96'); svg.classList.add('fig');
-  if (!ex) { svg.innerHTML = '<text x="50" y="60" text-anchor="middle" font-size="34">💪</text>'; return; }
+  svg.setAttribute('viewBox', vb); svg.classList.add('fig');
+  if (!ex) { svg.innerHTML = '<text x="50" y="58" text-anchor="middle" font-size="30" font-family="Archivo Black,Arial Black">?</text>'; return; }
   const back = ex.front ? '' : ' back';
   let s = '<line class="floor" x1="2" y1="88.6" x2="98" y2="88.6"/>';
   if (ex.chair) {
@@ -402,7 +547,8 @@ function mountFig(svg, id) {
       else { d.setAttribute('cx', h[0]); d.setAttribute('cy', h[1]); }
     });
   };
-  if (reduceMotion) draw(0.5); else figs.push({svg, draw});
+  draw(0.5);
+  if (!reduceMotion) figs.push({svg, draw});
 }
 (function loop(now) {
   const p = (1 - Math.cos(now / 2600 * 2 * Math.PI)) / 2;
@@ -412,75 +558,83 @@ function mountFig(svg, id) {
   requestAnimationFrame(loop);
 })(0);
 
-/* ---------- rest timer ---------- */
+/* ---------- sound ---------- */
 let audioCtx;
 function unlockAudio() {
   try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {}
 }
-function beep() {
+function tone(freqs, gap = 0.12, len = 0.18) {
   if (!audioCtx) return;
-  [0, 0.35, 0.7].forEach(off => {
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t0 = audioCtx.currentTime + off;
-    o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
-    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.25);
-    o.start(t0); o.stop(t0 + 0.3);
+  freqs.forEach((f, i) => {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t0 = audioCtx.currentTime + i * gap;
+    o.type = 'square'; o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
+    o.start(t0); o.stop(t0 + len + 0.05);
   });
 }
-function startRest() { S.restTotal = S.rest * 1000; S.restEnd = Date.now() + S.restTotal; save(); tickRest(); }
+
+/* ---------- full-screen rest timer ---------- */
+function startRest(next) { S.restTotal = S.rest * 1000; S.restEnd = Date.now() + S.restTotal; S.restNext = next; save(); tickRest(); }
 function tickRest() {
-  const bar = document.getElementById('rest');
-  if (!S.restEnd) { bar.classList.remove('show'); return; }
+  const box = document.getElementById('rest');
+  if (!S.restEnd) { box.classList.remove('show'); return; }
   const left = S.restEnd - Date.now();
   if (left <= 0) {
-    S.restEnd = 0; save(); bar.classList.remove('show');
-    beep(); if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-    toast('Istirahat selesai, lanjut set berikutnya!');
+    S.restEnd = 0; save(); box.classList.remove('show');
+    tone([660, 880, 1100]); if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    toast('Istirahat selesai. Ayo set berikutnya!');
     return;
   }
-  bar.classList.add('show');
-  document.getElementById('restT').textContent = fmtDur(left + 999);
+  box.classList.add('show');
   const total = S.restTotal || S.rest * 1000;
-  document.getElementById('restBar').style.strokeDashoffset = 113.1 * (1 - Math.min(1, left / total));
+  document.getElementById('restT').textContent = fmtDur(left + 999);
+  document.getElementById('restTot').textContent = fmtDur(total);
+  document.getElementById('restNext').textContent = S.restNext || 'Set berikutnya';
+  document.getElementById('ring').style.setProperty('--p', Math.min(1, left / total));
 }
-document.getElementById('restPlus').onclick = () => { S.restEnd += 15000; S.restTotal = (S.restTotal || S.rest * 1000) + 15000; save(); tickRest(); };
+const adjRest = d => { S.restEnd = Math.max(Date.now() + 1000, S.restEnd + d); S.restTotal = Math.max(1000, (S.restTotal || S.rest * 1000) + d); save(); tickRest(); };
+document.getElementById('restPlus').onclick = () => adjRest(15000);
+document.getElementById('restMinus').onclick = () => adjRest(-15000);
 document.getElementById('restSkip').onclick = () => { S.restEnd = 0; save(); tickRest(); };
 setInterval(() => {
   tickRest();
   const e = document.getElementById('elapsed'); if (e && S.active) e.textContent = fmtDur(Date.now() - S.active.start);
 }, 250);
 
-/* ---------- views ---------- */
-let navIdx = null, view = S.active ? 'workout' : 'home', curEx = null, lastResult = null, editType = 'push', progEx = null;
+/* ---------- reward cards ---------- */
+let rewardQueue = [];
+function showRewards(events) { rewardQueue = events; nextReward(); }
+function nextReward() {
+  const box = document.getElementById('reward');
+  const ev = rewardQueue.shift();
+  if (!ev) { box.classList.remove('show'); box.innerHTML = ''; return; }
+  const cols = ['var(--pink)', 'var(--blue)', '#fff', 'var(--pink)', 'var(--blue)', '#fff', 'var(--pink)', 'var(--blue)'];
+  const conf = cols.map((c, i) => { const a = i / cols.length * 6.28; return `<i class="cf" style="background:${c};left:50%;top:30%;--x:${Math.cos(a) * 170}px;--y:${Math.sin(a) * 170}px"></i>`; }).join('');
+  box.innerHTML = `<div class="rcard">${conf}<h3>HADIAH TERBUKA!</h3><span class="why">${esc(ev.why)}</span>
+    <div class="fact"><small>FAKTA #${ev.fact + 1}</small>${esc(FACTS[ev.fact])}</div>
+    <button class="big pk" id="rwOk">${rewardQueue.length ? 'Hadiah berikutnya ›' : 'Mantap!'}</button></div>`;
+  box.classList.add('show');
+  tone([523, 659, 784, 1047], 0.09, 0.16);
+  document.getElementById('rwOk').onclick = nextReward;
+}
+
+/* ---------- navigation ---------- */
+let view = S.active ? 'workout' : 'home', curEx = null, lastResult = null, editType = 'push';
+let progEx = null, progRange = 3, progMetric = 'beban', histY = null, histM = null, histSel = null;
 const app = document.getElementById('app');
-const DEPTH = {home: 0, history: 1, progress: 1, settings: 1, workout: 1, done: 1, exercise: 2};
+const DEPTH = {home: 0, history: 1, progress: 1, badges: 1, settings: 1, workout: 1, done: 1, exercise: 2, timer: 2, plan: 2};
 function go(v, arg, dir) {
   dir = dir || (DEPTH[v] >= DEPTH[view] ? 'fwd' : 'bck');
-  view = v; if (v === 'exercise') curEx = arg; render(); scrollTo(0, 0);
-  app.className = ''; [...app.children].forEach((c, i) => c.style.setProperty('--i', Math.min(i, 12)));
+  view = v; if (v === 'exercise') curEx = arg; if (v === 'plan') editType = arg;
+  render(); scrollTo(0, 0);
+  app.className = ''; [...app.children].forEach((c, i) => c.style.setProperty('--i', Math.min(i, 10)));
   void app.offsetWidth; app.className = dir;
-  countUp();
 }
-function back() { if (view === 'exercise') go('workout', null, 'bck'); else if (view !== 'home') go('home', null, 'bck'); }
-// animate numbers up from 0 (finish screen)
-function countUp() {
-  document.querySelectorAll('[data-n]').forEach(el => {
-    const to = +el.dataset.n, t0 = performance.now();
-    const step = now => { const p = Math.min(1, (now - t0) / 900); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  });
+function back() {
+  if (view === 'exercise') go('workout', null, 'bck');
+  else if (view === 'timer' || view === 'plan') go('settings', null, 'bck');
+  else if (view !== 'home') go('home', null, 'bck');
 }
-// liquid-glass highlight that follows the finger
-const GLASS = '.card,.big,.exitem,details,.cue,.herobox,.chartbox,.stat div,.list-edit .row,.pr';
-let lit = null;
-function light(e) {
-  const g = e.target.closest && e.target.closest(GLASS); if (!g) return;
-  if (lit && lit !== g) lit.classList.remove('lit');
-  const r = g.getBoundingClientRect(); g.style.setProperty('--mx', (e.clientX - r.left) + 'px'); g.style.setProperty('--my', (e.clientY - r.top) + 'px');
-  g.classList.add('lit'); lit = g;
-}
-addEventListener('pointerdown', light, {passive: true});
-addEventListener('pointermove', e => { if (lit && e.pressure > 0) light(e); }, {passive: true});
-['pointerup', 'pointercancel'].forEach(t => addEventListener(t, () => { if (lit) { lit.classList.remove('lit'); lit = null; } }, {passive: true}));
 document.getElementById('back').onclick = back;
 document.getElementById('updBtn').onclick = () => location.reload();
 // iOS home-screen apps have no back gesture: swipe right from the left screen edge goes back
@@ -490,51 +644,57 @@ addEventListener('touchend', e => {
   if (!edge) return;
   const t = e.changedTouches[0], dx = t.clientX - edge.x, dy = Math.abs(t.clientY - edge.y);
   edge = null;
-  if (dx > 70 && dx > dy * 2) back();
+  if (dx > 70 && dx > dy * 2 && !document.getElementById('rest').classList.contains('show')) back();
 }, {passive: true});
 
 function render() {
-  document.getElementById('nav').classList.toggle('hide', ['workout', 'exercise'].includes(view));
-  document.body.classList.toggle('noNav', ['workout', 'exercise'].includes(view));
+  const inWorkout = ['workout', 'exercise'].includes(view);
+  document.getElementById('nav').classList.toggle('hide', inWorkout);
   document.body.classList.toggle('hasBack', view !== 'home');
-  ({home, workout, exercise, done, history, progress, settings})[view]();
+  ({home, workout, exercise, done, history, progress, badges, settings, timer, plan})[view]();
   renderNav();
 }
 function renderNav() {
   const items = [
     ['home', 'M5 12h14M13 6l6 6-6 6M5 6v12', 'Mulai'],
-    ['history', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.6-6.1M3 4v4h4', 'Riwayat'],
+    ['history', 'M4 6h16v14H4zM4 10h16M9 3v5M15 3v5', 'Riwayat'],
     ['progress', 'M4 19V5M4 19h16M8 15l4-4 3 3 5-6', 'Progres'],
-    ['settings', 'M5 7h9M18 7h1M5 17h1M10 17h9M16 5v4M8 15v4', 'Pengaturan'],
+    ['badges', 'M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z', 'Lencana'],
+    ['settings', 'M5 7h9M18 7h1M5 17h1M10 17h9M16 5v4M8 15v4', 'Atur'],
   ];
-  const nav = document.getElementById('nav'), cur = view === 'done' ? 'home' : view;
-  const idx = Math.max(0, items.findIndex(i => i[0] === cur));
-  nav.innerHTML = `<div class="pill"><i class="ind" style="transform:translateX(${(navIdx ?? idx) * 100}%)"></i>` + items.map(([v, d, l]) =>
-    `<button data-v="${v}" class="${v === cur ? 'on' : ''}"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join('') + '</div>';
+  const cur = view === 'done' ? 'home' : ['timer', 'plan'].includes(view) ? 'settings' : view;
+  const nav = document.getElementById('nav');
+  nav.innerHTML = items.map(([v, d, l]) => `<button data-v="${v}" class="${v === cur ? 'on' : ''}"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join('');
   nav.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.v));
-  // slide the glass indicator from the previous tab to the new one
-  requestAnimationFrame(() => requestAnimationFrame(() => { const i = nav.querySelector('.ind'); if (i) i.style.transform = `translateX(${idx * 100}%)`; }));
-  navIdx = idx;
+}
+
+/* ---------- views ---------- */
+function hud(st) {
+  return `<button class="hud" id="hud"><span class="lv">LV ${st.level}</span><span class="bar"><i style="width:${Math.round(st.into / st.span * 100)}%"></i></span><small>${num(st.into)}/${num(st.span)} XP</small></button>`;
 }
 
 function home() {
-  const last = S.sessions[S.sessions.length - 1];
-  const suggest = last ? NEXT[last.type] : 'push';
-  let h = `<h1>Hari ini kamu workout apa?</h1>`;
-  h += last ? `<div class="muted">Terakhir: ${TYPES[last.type].name}, ${ago(last.start)}</div>` : `<div class="muted">Belum ada catatan. Ayo mulai sesi pertama!</div>`;
-  if (S.active) {
-    h += `<div class="card" style="border:1px solid var(--accent)"><b>Workout ${TYPES[S.active.type].name} sedang berjalan</b><div class="muted small">Mulai ${fmtDate(S.active.start)}</div>
-      <div class="row" style="margin-top:10px"><button class="primary grow" id="resume">Lanjutkan</button></div></div>`;
-  }
+  const st = stats(S.sessions), last = S.sessions[S.sessions.length - 1], suggest = last ? NEXT[last.type] : 'push';
+  const today = dayStart(Date.now()), dow = (new Date(today).getDay() + 6) % 7, mon = today - dow * 864e5;
+  const byDay = {}; S.sessions.forEach(s => { (byDay[ymd(s.start)] = byDay[ymd(s.start)] || []).push(s.type); });
+  const week = Array.from({length: 7}, (_, i) => {
+    const ts = mon + i * 864e5 + 3600e3, ty = (byDay[ymd(ts)] || [])[0];
+    return `<div class="day ${ty || ''} ${i === dow ? 'today' : ''} ${i > dow ? 'future' : ''}">${'SSRKJSM'[i]}<b>${new Date(ts).getDate()}</b></div>`;
+  }).join('');
+  let h = hud(st) + `<h1>Hari ini workout apa?</h1><div class="week">${week}</div>
+    <div class="small muted">${last ? 'Terakhir: ' + TYPES[last.type].name + ', ' + ago(last.start) : 'Belum ada catatan. Sesi pertama memberi lencana!'}</div>`;
+  if (S.active) h += `<div class="card" style="margin-top:12px;background:var(--yellow)"><b>Workout ${TYPES[S.active.type].name} sedang berjalan</b>
+    <div class="small">Mulai ${fmtTime(S.active.start)}</div><button class="big pk" style="margin-top:10px" id="resume">Lanjutkan</button></div>`;
   for (const k of Object.keys(TYPES)) {
-    const T = TYPES[k], l = lastOfType(k);
-    const nx = k === suggest && !S.active;
-    h += `<button class="big${nx ? ' next' : ''}" data-t="${k}"><span class="ic"><svg viewBox="0 0 24 24"><path d="${T.icon}"/></svg></span><span class="grow"><b>${T.name}</b>
-      ${nx ? '<span class="badge">Giliran berikutnya</span>' : ''}<div>${T.sub}</div><div class="muted small">${l ? 'Terakhir ' + ago(l.start) : 'Belum pernah'} · ${S.plan[k].length} gerakan</div></span></button>`;
+    const T = TYPES[k], l = lastOfType(k), nx = k === suggest && !S.active;
+    h += `<button class="type ${k}${nx ? ' next' : ''}" data-t="${k}" style="--tc:var(--${k})">${nx ? '<span class="sticker">Giliran!</span>' : ''}
+      <span class="tic">${typeIcon(k)}</span><span class="grow"><b>${T.name}</b><span class="sub">${T.sub}</span></span>
+      <span class="when">${l ? ago(l.start) : 'baru'}</span></button>`;
   }
   app.innerHTML = h;
+  document.getElementById('hud').onclick = () => go('badges');
   const r = document.getElementById('resume'); if (r) r.onclick = () => go('workout');
-  app.querySelectorAll('.big').forEach(b => b.onclick = () => {
+  app.querySelectorAll('.type').forEach(b => b.onclick = () => {
     const k = b.dataset.t;
     if (S.active) {
       if (S.active.type === k) return go('workout');
@@ -549,28 +709,34 @@ function entryFor(id) {
   const a = S.active;
   if (!a.ex[id]) {
     const prev = lastSets(id), bw = exInfo(id).bw;
-    a.ex[id] = {sets: prev ? prev.map(s => ({reps: s.reps, kg: s.kg, done: false})) : [1, 2, 3].map(() => ({reps: 10, kg: bw ? 0 : 5, done: false}))};
+    a.ex[id] = {cur: 0, sets: prev
+      ? prev.slice(0, SET_MAX).map(s => ({reps: clamp(s.reps, REP_MIN, REP_MAX), kg: clamp(s.kg, KG_MIN, KG_MAX), done: false}))
+      : [1, 2, 3].map(() => ({reps: 10, kg: bw ? 0 : 5, done: false}))};
   }
   return a.ex[id];
 }
+const isDone = e => e && e.sets.every(s => s.done);
 
 function workout() {
   const a = S.active; if (!a) return go('home');
-  const T = TYPES[a.type];
-  let h = `<div class="top" style="justify-content:flex-end"><div class="muted" style="font-variant-numeric:tabular-nums"><span id="elapsed">${fmtDur(Date.now() - a.start)}</span></div></div>
-    <h1>${T.name}</h1><div class="muted">${T.sub} · ketuk gerakan untuk mencatat</div>`;
+  const T = TYPES[a.type], n = a.order.filter(id => isDone(a.ex[id])).length;
+  let h = `<div class="top"><span></span><b id="elapsed">${fmtDur(Date.now() - a.start)}</b></div>
+    <div class="ttl ${a.type}" style="--tc:var(--${a.type})">${T.name}</div>
+    <div class="row small"><span class="grow">${n} dari ${a.order.length} gerakan selesai</span></div>
+    <div class="bar" style="margin-top:6px"><i style="width:${a.order.length ? n / a.order.length * 100 : 0}%"></i></div>
+    <div class="tiles">`;
   a.order.forEach(id => {
-    const prev = lastSets(id), e = a.ex[id], n = e ? e.sets.filter(s => s.done).length : 0;
-    h += `<button class="exitem" data-id="${esc(id)}"><svg data-fig="${esc(id)}"></svg><div class="grow"><div class="name">${esc(exName(id))}</div>
-      <div class="muted small">${prev ? 'Lalu: ' + fmtSets(prev) : 'Belum pernah dicatat'}</div></div>
-      ${n ? `<div class="done-mark">${n}/${e.sets.length} ✓</div>` : '<div class="muted">›</div>'}</button>`;
+    const e = a.ex[id], prev = lastSets(id), d = e ? e.sets.filter(s => s.done).length : 0, all = isDone(e);
+    h += `<button class="tile${all ? ' done' : ''}" data-id="${esc(id)}"><svg data-fig="${esc(id)}"></svg>
+      ${d ? `<span class="sticker">${all ? '✓ ' : ''}${d}/${e.sets.length}</span>` : ''}
+      <span class="tx"><span class="nm">${esc(exName(id))}</span><span class="ls">${prev ? 'Lalu ' + fmtSets(prev) : 'Belum pernah'}</span></span></button>`;
   });
-  h += `<h2>Catatan sesi</h2><textarea id="note" placeholder="Opsional, misal: bahu kiri agak pegal">${esc(a.note)}</textarea>
-    <div class="row" style="margin-top:16px"><button class="danger" id="cancel">Batalkan</button><button class="primary grow" id="finish">Selesai Workout</button></div>`;
+  h += `</div><label class="lb" for="note">Catatan sesi</label><textarea id="note" placeholder="Opsional, misal: bahu kiri agak pegal">${esc(a.note)}</textarea>
+    <div class="row" style="margin-top:16px"><button class="danger" id="cancel">Batal</button><button class="big pk grow" id="finish">Selesai workout</button></div>`;
   app.innerHTML = h;
-  app.querySelectorAll('svg[data-fig]').forEach(s => mountFig(s, s.dataset.fig));
-  app.querySelectorAll('.exitem').forEach(b => b.onclick = () => go('exercise', b.dataset.id));
-  document.getElementById('note').oninput = e => { a.note = e.target.value; save(); };
+  app.querySelectorAll('svg[data-fig]').forEach(s => mountFig(s, s.dataset.fig, '0 1 100 91'));
+  app.querySelectorAll('.tile').forEach(b => b.onclick = () => go('exercise', b.dataset.id));
+  document.getElementById('note').oninput = ev => { a.note = ev.target.value; save(); };
   document.getElementById('cancel').onclick = () => {
     if (!confirm('Batalkan workout ini? Semua set di sesi ini tidak akan disimpan.')) return;
     S.active = null; S.restEnd = 0; save(); go('home');
@@ -578,52 +744,98 @@ function workout() {
   document.getElementById('finish').onclick = finish;
 }
 
+// +/- buttons (hold to repeat) and vertical drag on the big number
+function numCtl(box, get, set, min, max) {
+  const val = box.querySelector('.val');
+  const show = () => { val.textContent = get(); val.classList.remove('bump'); void val.offsetWidth; val.classList.add('bump'); };
+  const step = d => { const v = clamp(get() + d, min, max); if (v !== get()) { set(v); show(); } };
+  box.querySelectorAll('.pm').forEach(b => {
+    let t, iv;
+    const stop = () => { clearTimeout(t); clearInterval(iv); };
+    b.addEventListener('pointerdown', e => { e.preventDefault(); step(+b.dataset.d); t = setTimeout(() => { iv = setInterval(() => step(+b.dataset.d), 90); }, 380); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
+    b.addEventListener('contextmenu', e => e.preventDefault());
+  });
+  let y0 = null, v0 = 0;
+  val.addEventListener('pointerdown', e => { y0 = e.clientY; v0 = get(); val.setPointerCapture(e.pointerId); });
+  val.addEventListener('pointermove', e => {
+    if (y0 === null) return;
+    const v = clamp(v0 + Math.round((y0 - e.clientY) / 18), min, max);
+    if (v !== get()) { set(v); show(); }
+  });
+  ['pointerup', 'pointercancel'].forEach(ev => val.addEventListener(ev, () => { y0 = null; }));
+}
+
 function exercise() {
   const a = S.active; if (!a) return go('home');
   const id = curEx, info = exInfo(id), e = entryFor(id), bw = !!info.bw, prev = lastSets(id);
+  if (!(e.cur < e.sets.length)) e.cur = 0;
   save();
   const i = a.order.indexOf(id), next = a.order[i + 1];
-  app.innerHTML = `<div class="top" style="justify-content:flex-end"><div class="muted">${i + 1}/${a.order.length}</div></div>
+  app.innerHTML = `<div class="top"><span></span><b>${i + 1} / ${a.order.length}</b></div>
     <h1>${esc(info.name)}</h1>
-    <div class="herobox"><svg class="hero" id="hero"></svg></div>
-    ${info.cue ? `<div class="cue">${esc(info.cue)}</div>` : ''}
-    <div class="muted">${prev ? 'Sesi lalu: <b style="color:var(--text)">' + fmtSets(prev) + '</b>. Coba samai atau kalahkan!' : 'Gerakan baru, belum ada catatan sebelumnya.'}</div>
-    <div class="card setcount"><div><b>Jumlah set</b><div class="muted small">Geser roda untuk memilih</div></div><div id="setWheel"></div></div>
-    <div class="colhead ${bw ? 'bw' : ''}"><div></div><div>Repetisi</div>${bw ? '' : '<div>Beban (kg)</div>'}<div>Selesai</div></div>
-    <div id="sets"></div>
-    <div class="muted small" style="margin:8px 0 14px">Ketuk ✓ setelah menyelesaikan set. Timer istirahat ${S.rest} detik akan berjalan otomatis.</div>
-    <button class="primary" style="width:100%" id="next">${next ? 'Berikutnya: ' + esc(exName(next)) + ' ›' : 'Kembali ke daftar ›'}</button>`;
-  mountFig(document.getElementById('hero'), id);
-  document.getElementById('next').onclick = () => next ? go('exercise', next) : go('workout');
-  document.getElementById('setWheel').appendChild(wheel(SETS, e.sets.length, n => {
-    if (n === e.sets.length) return;
-    while (e.sets.length < n) { const l = e.sets[e.sets.length - 1]; e.sets.push({reps: l.reps, kg: l.kg, done: false}); }
-    e.sets.length = n; save(); renderSets();
-  }));
-  function renderSets() {
-    const box = document.getElementById('sets'); box.innerHTML = '';
-    e.sets.forEach((s, k) => {
-      const row = document.createElement('div'); row.className = 'setrow' + (bw ? ' bw' : '');
-      row.innerHTML = `<div class="lbl">Set ${k + 1}</div>`;
-      row.appendChild(wheel(REPS, s.reps, v => { s.reps = v; save(); }));
-      if (!bw) row.appendChild(wheel(KGS, s.kg, v => { s.kg = v; save(); }));
-      const b = document.createElement('button'); b.className = 'tick' + (s.done ? ' on' : ''); b.textContent = '✓';
-      b.onclick = () => {
-        unlockAudio();
-        s.done = !s.done; b.classList.toggle('on', s.done); save();
-        if (s.done) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); startRest(); }
-      };
-      row.appendChild(b); box.appendChild(row);
-    });
+    <div class="card hero"><svg id="hero"></svg></div>
+    <div class="small" style="margin-top:10px">${prev ? 'Lalu: <b>' + fmtSets(prev) + '</b>. Kalahkan!' : 'Gerakan baru. Belum ada catatan sebelumnya.'}</div>
+    <div class="setchips" id="chips"></div>
+    <div class="setlabel" id="setlabel"></div>
+    <div class="nums${bw ? ' one' : ''}" style="margin-top:8px">
+      <div class="num card" id="nRep"><button class="pm" data-d="1">+</button><div class="val"></div><div class="unit">REPETISI</div><button class="pm" data-d="-1">−</button></div>
+      ${bw ? '' : '<div class="num card" id="nKg"><button class="pm" data-d="1">+</button><div class="val"></div><div class="unit">KG / DUMBBELL</div><button class="pm" data-d="-1">−</button></div>'}
+    </div>
+    <div class="small muted" style="text-align:center;margin:8px 0 12px">Ketuk − / +, tahan untuk cepat, atau geser angka ke atas/bawah.</div>
+    <button class="big pk" id="main"></button>
+    <button class="big bl" style="margin-top:12px" id="next">${next ? 'Berikutnya: ' + esc(exName(next)) + ' ›' : 'Kembali ke daftar ›'}</button>
+    <div class="row"><button class="ghost" id="del">Hapus set ini</button></div>
+    ${info.cue ? `<details class="card cue"><summary>Cara melakukan ▾</summary><p>${esc(info.cue)}</p></details>` : ''}`;
+  mountFig(document.getElementById('hero'), id, '0 0 100 92');
+  const cur = () => e.sets[e.cur];
+  numCtl(document.getElementById('nRep'), () => cur().reps, v => { cur().reps = v; save(); }, REP_MIN, REP_MAX);
+  if (!bw) numCtl(document.getElementById('nKg'), () => cur().kg, v => { cur().kg = v; save(); }, KG_MIN, KG_MAX);
+  function draw() {
+    const s = cur();
+    document.getElementById('chips').innerHTML = e.sets.map((x, k) => `<button data-k="${k}" class="${x.done ? 'done' : ''} ${k === e.cur ? 'cur' : ''}">${x.done ? '✓' : k + 1}</button>`).join('')
+      + (e.sets.length < SET_MAX ? '<button class="add" id="addSet" aria-label="Tambah set">+</button>' : '');
+    document.getElementById('setlabel').textContent = `Set ${e.cur + 1} dari ${e.sets.length}${s.done ? ' · selesai' : ''}`;
+    document.querySelector('#nRep .val').textContent = s.reps;
+    if (!bw) document.querySelector('#nKg .val').textContent = s.kg;
+    const m = document.getElementById('main');
+    m.textContent = s.done ? 'Batalkan centang' : `Selesai set ${e.cur + 1} ✓`;
+    m.className = 'big ' + (s.done ? '' : 'pk');
+    document.getElementById('next').className = 'big ' + (isDone(e) ? 'bl' : '');
+    document.getElementById('del').style.visibility = e.sets.length > 1 && !s.done ? 'visible' : 'hidden';
+    document.querySelectorAll('#chips [data-k]').forEach(b => b.onclick = () => { e.cur = +b.dataset.k; save(); draw(); });
+    const add = document.getElementById('addSet');
+    if (add) add.onclick = () => { const l = e.sets[e.sets.length - 1]; e.sets.push({reps: l.reps, kg: l.kg, done: false}); e.cur = e.sets.length - 1; save(); draw(); };
   }
-  renderSets();
+  document.getElementById('main').onclick = ev => {
+    unlockAudio();
+    const s = cur();
+    if (s.done) { s.done = false; save(); draw(); return; }
+    s.done = true;
+    floatXP(ev.currentTarget, setXP(s)); tone([880, 1320], 0.07, 0.12);
+    const nk = e.sets.findIndex(x => !x.done);
+    let nextLabel;
+    if (nk >= 0) { e.cur = nk; nextLabel = `Set ${nk + 1} · ${info.name}`; }
+    else { const nx = a.order.find(x => x !== id && !isDone(a.ex[x])); nextLabel = nx ? exName(nx) : 'Selesaikan workout!'; }
+    save(); draw();
+    if (nk >= 0 || a.order.some(x => !isDone(a.ex[x]))) startRest(nextLabel);
+  };
+  document.getElementById('next').onclick = () => next ? go('exercise', next) : go('workout', null, 'bck');
+  document.getElementById('del').onclick = () => { if (e.sets.length < 2) return; e.sets.splice(e.cur, 1); e.cur = Math.min(e.cur, e.sets.length - 1); save(); draw(); };
+  draw();
+}
+function floatXP(el, xp) {
+  const r = el.getBoundingClientRect(), f = document.createElement('div');
+  f.className = 'xpf'; f.textContent = '+' + xp + ' XP';
+  f.style.left = (r.left + r.width / 2) + 'px'; f.style.top = (r.top - 10) + 'px';
+  document.body.appendChild(f); setTimeout(() => f.remove(), 1200);
 }
 
 function finish() {
   const a = S.active;
   const entries = a.order.filter(id => a.ex[id]).map(id => ({ex: id, name: exName(id), sets: a.ex[id].sets.filter(s => s.done).map(s => ({reps: s.reps, kg: s.kg}))})).filter(e => e.sets.length);
   if (!entries.length) {
-    if (confirm('Belum ada set yang dicentang ✓. Batalkan sesi ini?')) { S.active = null; S.restEnd = 0; save(); go('home'); }
+    if (confirm('Belum ada set yang selesai. Batalkan sesi ini?')) { S.active = null; S.restEnd = 0; save(); go('home'); }
     return;
   }
   if (!confirm('Selesaikan dan simpan workout ini?')) return;
@@ -632,42 +844,79 @@ function finish() {
     const prevSets = S.sessions.flatMap(s => s.entries.filter(x => x.ex === e.ex).flatMap(x => x.sets));
     if (!prevSets.length) continue;
     const beat = e.sets.filter(s => !prevSets.some(p => p.kg >= s.kg && p.reps >= s.reps));
-    if (beat.length) {
-      const b = beat.sort((x, y) => y.kg - x.kg || y.reps - x.reps)[0];
-      prs.push(e.name + ': ' + (b.kg ? b.kg + ' kg × ' + b.reps + ' rep' : b.reps + ' rep'));
-    }
+    if (beat.length) { const b = beat.sort((x, y) => y.kg - x.kg || y.reps - x.reps)[0]; prs.push(e.name + ': ' + (b.kg ? b.kg + ' kg × ' + b.reps : b.reps + ' rep')); }
   }
+  const before = stats(S.sessions), prevType = lastOfType(a.type);
   const sess = {id: Date.now(), type: a.type, start: a.start, end: Date.now(), note: a.note.trim(), entries};
-  S.sessions.push(sess); S.active = null; S.restEnd = 0; save();
-  lastResult = {sess, prs}; go('done');
+  S.sessions.push(sess);
+  const after = stats(S.sessions);
+  const events = [];
+  for (let L = before.level + 1; L <= after.level; L++) events.push({why: 'Naik ke Level ' + L});
+  after.badges.filter(b => !before.badges.includes(b)).forEach(b => events.push({why: 'Lencana: ' + BADGES.find(x => x.id === b).name}));
+  prs.forEach(p => events.push({why: 'Rekor baru · ' + p}));
+  events.forEach(ev => { ev.fact = pickFact(); });
+  S.active = null; S.restEnd = 0; save();
+  lastResult = {sess, prs, before, after, prevType, events};
+  go('done');
+  if (events.length) setTimeout(() => showRewards(events.slice()), 450);
 }
 
 function done() {
   if (!lastResult) return go('home');
-  const {sess, prs} = lastResult, sets = sess.entries.flatMap(e => e.sets);
-  let h = `<svg class="burst" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23"/><path d="M15 27l8 8 14-16"/></svg><h1>Mantap!</h1><div class="muted">Workout ${TYPES[sess.type].name} tersimpan.</div>
-    <div class="stat" style="margin:16px 0"><div><b>${fmtDur(sess.end - sess.start)}</b><span class="small muted">durasi</span></div>
-    <div><b data-n="${sets.length}">0</b><span class="small muted">set</span></div><div><b data-n="${sets.reduce((n, s) => n + s.reps, 0)}">0</b><span class="small muted">repetisi</span></div></div>`;
-  if (prs.length) h += `<h2>Rekor baru</h2>` + prs.map(p => `<div class="pr">${esc(p)}</div>`).join('');
-  h += `<h2>Ringkasan</h2>` + sess.entries.map(e => `<div class="card row"><div class="grow">${esc(e.name)}</div><div class="muted">${fmtSets(e.sets)}</div></div>`).join('');
-  h += `<button class="primary" style="width:100%;margin-top:12px" id="ok">Selesai</button>`;
+  const {sess, before, after, prevType, events} = lastResult, sets = sess.entries.flatMap(e => e.sets);
+  const v = vol(sets), pv = prevType ? vol(prevType.entries.flatMap(e => e.sets)) : 0;
+  const pct = pv ? Math.round((v - pv) / pv * 100) : null;
+  let h = `<h1>${TYPES[sess.type].name} vs sesi lalu</h1>`;
+  h += pct === null
+    ? `<div class="card delta up"><b>SESI PERTAMA!</b><span class="small">Ini sesi ${TYPES[sess.type].name} pertamamu. Jadi patokan berikutnya.</span></div>`
+    : `<div class="card delta ${pct >= 0 ? 'up' : 'down'}"><b>${pct > 0 ? '▲' : pct < 0 ? '▼' : '='} ${Math.abs(pct)}%</b><span class="small">total volume (rep × kg) dibanding ${TYPES[sess.type].name} sebelumnya</span></div>`;
+  h += `<div class="stats"><div class="card"><b>${fmtDur(sess.end - sess.start)}</b><small>durasi</small></div><div class="card"><b>${sets.length}</b><small>set</small></div><div class="card"><b>${sets.reduce((n, s) => n + s.reps, 0)}</b><small>repetisi</small></div></div>`;
+  h += `<div class="card"><div class="cmp"><span class="h">GERAKAN</span><span class="h n">LALU</span><span class="h n">KINI</span><span></span><span class="sep"></span>`;
+  for (const e of sess.entries) {
+    const p = lastSets(e.ex, sess.start), now = vol(e.sets), was = p ? vol(p) : null;
+    const cls = was === null ? 'eq' : now > was ? 'up' : now < was ? 'dn' : 'eq', ar = was === null ? '•' : now > was ? '▲' : now < was ? '▼' : '=';
+    h += `<span>${esc(e.name)}</span><span class="n muted">${was === null ? '–' : num(was)}</span><span class="n"><b>${num(now)}</b></span><span class="a ${cls}">${ar}</span>`;
+  }
+  h += `</div><div class="small muted" style="margin-top:8px">Angka = volume (rep × kg). Gerakan tanpa beban dihitung dari repetisi.</div></div>`;
+  h += `<div class="card xpcard" style="margin-top:14px"><div class="row"><span class="big grow">+${num(after.xp - before.xp)} XP</span><span class="lv" style="background:#fff">LV ${after.level}</span></div>
+    <div class="bar" style="margin-top:10px"><i style="width:${Math.round(after.into / after.span * 100)}%"></i></div>
+    <div class="small" style="margin-top:6px">${num(after.span - after.into)} XP lagi ke level ${after.level + 1}</div></div>`;
+  if (events.length) h += `<button class="big ye" style="margin-top:14px" id="again">Buka lagi ${events.length} hadiah</button>`;
+  h += `<button class="big pk" style="margin-top:14px" id="ok">Selesai</button>`;
   app.innerHTML = h;
   document.getElementById('ok').onclick = () => go('home');
+  const ag = document.getElementById('again'); if (ag) ag.onclick = () => showRewards(events.slice());
 }
 
 function history() {
-  let h = `<h1>Riwayat</h1><div class="muted">${S.sessions.length} sesi tercatat</div>`;
-  if (!S.sessions.length) h += `<div class="card muted">Belum ada sesi. Riwayat muncul setelah kamu menekan "Selesai Workout".</div>`;
-  [...S.sessions].reverse().forEach(s => {
-    const T = TYPES[s.type], n = s.entries.reduce((k, e) => k + e.sets.length, 0);
-    h += `<details><summary class="row"><span class="badge" style="--c:${T.color}">${T.name}</span><div class="grow">${fmtDate(s.start)}</div><div class="muted small">${n} set · ${fmtDur(s.end - s.start)}</div></summary>
-      <div style="margin-top:10px">${s.entries.map(e => `<div class="row small" style="padding:4px 0"><div class="grow">${esc(e.name)}</div><div class="muted">${fmtSets(e.sets)}</div></div>`).join('')}
-      ${s.note ? `<div class="cue small">${esc(s.note)}</div>` : ''}
-      <button class="danger small" data-del="${s.id}">Hapus sesi ini</button></div></details>`;
-  });
+  const now = new Date();
+  if (histY === null) { const l = S.sessions[S.sessions.length - 1]; const d = l ? new Date(l.start) : now; histY = d.getFullYear(); histM = d.getMonth(); histSel = l ? ymd(l.start) : ymd(now); }
+  const first = new Date(histY, histM, 1), days = new Date(histY, histM + 1, 0).getDate(), lead = (first.getDay() + 6) % 7;
+  const byDay = {}; S.sessions.forEach(s => { (byDay[ymd(s.start)] = byDay[ymd(s.start)] || []).push(s); });
+  let cells = 'SSRKJSM'.split('').map(d => `<span class="wd">${d}</span>`).join('');
+  for (let i = 0; i < lead; i++) cells += '<button class="out" tabindex="-1"></button>';
+  for (let d = 1; d <= days; d++) {
+    const k = histY + '-' + histM + '-' + d, ss = byDay[k] || [];
+    cells += `<button data-k="${k}" class="${k === histSel ? 'sel' : ''} ${k === ymd(now) ? 'today' : ''}">${d}<span class="dots">${ss.map(s => `<i class="${s.type}"></i>`).join('')}</span></button>`;
+  }
+  const sel = (byDay[histSel] || []).slice().reverse();
+  const monthName = first.toLocaleDateString('id-ID', {month: 'long', year: 'numeric'});
+  let h = `<h1>Riwayat</h1><div class="small muted">${S.sessions.length} sesi tercatat</div>
+    <div class="calhd" style="margin-top:12px"><button id="pm" aria-label="Bulan sebelumnya">‹</button><b>${monthName}</b><button id="nm" aria-label="Bulan berikutnya">›</button></div>
+    <div class="cal">${cells}</div>
+    <div class="row small"><i class="push" style="width:12px;height:12px;border:2px solid #000"></i>Push <i class="pull" style="width:12px;height:12px;border:2px solid #000"></i>Pull <i class="leg" style="width:12px;height:12px;border:2px solid #000"></i>Leg</div>`;
+  h += sel.length ? sel.map(s => `<div class="card sess"><div class="row"><span class="chip ${s.type}" style="--tc:var(--${s.type})">${TYPES[s.type].name}</span><b class="grow">${fmtDate(s.start)}</b><span class="small">${fmtDur(s.end - s.start)}</span></div>
+      <div style="margin-top:8px">${s.entries.map(e => `<div class="row small" style="padding:3px 0"><span class="grow">${esc(e.name)}</span><span class="muted">${fmtSets(e.sets)}</span></div>`).join('')}</div>
+      ${s.note ? `<div class="small" style="margin-top:8px;border-top:2px dashed #000;padding-top:8px">${esc(s.note)}</div>` : ''}
+      <button class="ghost small" data-del="${s.id}">Hapus sesi ini</button></div>`).join('')
+    : `<div class="card sess small">Tidak ada workout di tanggal ini.</div>`;
   app.innerHTML = h;
+  const mv = d => { histM += d; if (histM < 0) { histM = 11; histY--; } if (histM > 11) { histM = 0; histY++; } render(); };
+  document.getElementById('pm').onclick = () => mv(-1);
+  document.getElementById('nm').onclick = () => mv(1);
+  app.querySelectorAll('.cal [data-k]').forEach(b => b.onclick = () => { histSel = b.dataset.k; render(); });
   app.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
-    if (!confirm('Hapus sesi ini dari riwayat? Tidak bisa dibatalkan.')) return;
+    if (!confirm('Hapus sesi ini dari riwayat? XP dan lencananya ikut dihitung ulang. Tidak bisa dibatalkan.')) return;
     S.sessions = S.sessions.filter(s => s.id !== +b.dataset.del); save(); render();
   });
 }
@@ -675,55 +924,114 @@ function history() {
 function progress() {
   const ids = [...new Set(S.sessions.flatMap(s => s.entries.map(e => e.ex)))];
   let h = `<h1>Progres</h1>`;
-  if (!ids.length) { app.innerHTML = h + `<div class="card muted">Grafik progres muncul setelah kamu menyimpan minimal satu workout.</div>`; return; }
+  if (!ids.length) { app.innerHTML = h + `<div class="card">Grafik muncul setelah kamu menyimpan minimal satu workout.</div>`; return; }
   if (!ids.includes(progEx)) progEx = ids[0];
-  const data = S.sessions.map(s => ({ts: s.start, e: s.entries.find(e => e.ex === progEx)})).filter(d => d.e);
-  const name = data[data.length - 1].e.name;
-  const weighted = data.some(d => d.e.sets.some(s => s.kg > 0));
-  const val = d => weighted ? Math.max(...d.e.sets.map(s => s.kg)) : d.e.sets.reduce((n, s) => n + s.reps, 0);
-  const label = weighted ? 'Beban terberat (kg)' : 'Total repetisi';
-  h += `<select id="pick">${ids.map(id => `<option value="${esc(id)}" ${id === progEx ? 'selected' : ''}>${esc(exName(id) === '(gerakan dihapus)' ? (S.sessions.flatMap(s => s.entries).find(e => e.ex === id) || {}).name : exName(id))}</option>`).join('')}</select>
-    <h2>${esc(name)}</h2><div class="muted small">${label} per sesi</div>${chart(data.map(val), data.map(d => new Date(d.ts).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})))}
-    <h2>Semua catatan</h2>` + [...data].reverse().map(d => `<div class="card row small"><div class="grow">${fmtDate(d.ts)}</div><div class="muted">${fmtSets(d.e.sets)}</div></div>`).join('');
+  const nameOf = id => (S.sessions.flatMap(s => s.entries).find(e => e.ex === id) || {name: exName(id)}).name;
+  const from = progRange ? Date.now() - progRange * 30.5 * 864e5 : 0;
+  const data = S.sessions.filter(s => s.start >= from).map(s => ({ts: s.start, e: s.entries.find(e => e.ex === progEx)})).filter(d => d.e);
+  const M = {beban: ['Beban terberat', 'kg', d => Math.max(...d.e.sets.map(s => s.kg))], rep: ['Total repetisi', 'rep', d => d.e.sets.reduce((n, s) => n + s.reps, 0)], volume: ['Volume', 'rep×kg', d => vol(d.e.sets)]};
+  const [label, unit, f] = M[progMetric], vals = data.map(f);
+  h += `<select id="pick" aria-label="Pilih gerakan">${ids.map(id => `<option value="${esc(id)}" ${id === progEx ? 'selected' : ''}>${esc(nameOf(id))}</option>`).join('')}</select>
+    <div class="seg" style="margin-top:12px">${[[1, '1B'], [3, '3B'], [6, '6B'], [0, 'Semua']].map(([v, l]) => `<button data-r="${v}" class="${v === progRange ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="card" style="margin-top:12px;padding:8px">${vals.length ? chart(vals, data.map(d => new Date(d.ts).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}))) : '<div class="small" style="padding:30px 8px;text-align:center">Belum ada data di rentang ini.</div>'}</div>
+    <div class="chips">${Object.keys(M).map(k => `<button data-m="${k}" class="${k === progMetric ? 'on' : ''}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('')}</div>`;
+  if (vals.length) {
+    const best = Math.max(...vals), ch = vals[vals.length - 1] - vals[0];
+    h += `<div class="stats"><div class="card"><b>${num(best)}</b><small>terbaik (${unit})</small></div><div class="card"><b>${ch > 0 ? '+' : ''}${num(ch)}</b><small>perubahan</small></div><div class="card"><b>${vals.length}</b><small>sesi</small></div></div>
+      <div class="small muted">${label} per sesi untuk ${esc(nameOf(progEx))}.</div>`;
+  }
   app.innerHTML = h;
   document.getElementById('pick').onchange = e => { progEx = e.target.value; render(); };
+  app.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { progRange = +b.dataset.r; render(); });
+  app.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { progMetric = b.dataset.m; render(); });
 }
 function chart(vals, labels) {
-  const W = 340, H = 180, px = 30, py = 22, n = vals.length;
+  const W = 340, H = 200, px = 28, pt = 24, pb = 26, n = vals.length;
   const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
-  const x = i => n === 1 ? W / 2 : px + i * (W - px * 2) / (n - 1), y = v => H - py - (v - lo) / span * (H - py * 2);
+  const x = i => n === 1 ? W / 2 : px + i * (W - px * 2) / (n - 1), y = v => H - pb - (v - lo) / span * (H - pt - pb);
   const p = vals.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
-  let s = `<div class="chartbox"><svg class="chart" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc" stop-opacity=".4"/><stop offset="1" stop-color="#7dd3fc" stop-opacity="0"/></linearGradient></defs>${n > 1 ? `<polygon class="area" fill="url(#cg)" points="${x(0)},${H - py} ${p} ${x(n - 1)},${H - py}"/>` : ""}<polyline class="ln" pathLength="1" points="${p}"/>`;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+  [0, .5, 1].forEach(f => { const yy = pt + f * (H - pt - pb); s += `<line class="gl" x1="${px - 10}" y1="${yy}" x2="${W - px + 10}" y2="${yy}"/>`; });
+  if (n > 1) s += `<polygon class="ar" points="${x(0)},${H - pb} ${p} ${x(n - 1)},${H - pb}"/>`;
+  s += `<polyline class="ln" points="${p}"/>`;
   vals.forEach((v, i) => {
-    s += `<circle class="dot" cx="${x(i)}" cy="${y(v)}" r="3.5"/>`;
-    if (n <= 8 || i === 0 || i === n - 1 || v === hi) s += `<text x="${x(i)}" y="${y(v) - 8}" text-anchor="middle">${v}</text>`;
+    s += `<rect class="pt" x="${x(i) - 5}" y="${y(v) - 5}" width="10" height="10"/>`;
+    if (n <= 8 || i === n - 1 || v === hi) s += `<text x="${x(i)}" y="${y(v) - 10}" text-anchor="middle">${num(v)}</text>`;
   });
-  s += `<text x="${x(0)}" y="${H - 5}" text-anchor="middle">${labels[0]}</text>`;
-  if (n > 1) s += `<text x="${x(n - 1)}" y="${H - 5}" text-anchor="middle">${labels[n - 1]}</text>`;
-  return s + '</svg></div>';
+  s += `<text x="${x(0)}" y="${H - 6}" text-anchor="${n === 1 ? 'middle' : 'start'}">${labels[0]}</text>`;
+  if (n > 1) s += `<text x="${x(n - 1)}" y="${H - 6}" text-anchor="end">${labels[n - 1]}</text>`;
+  return s + '</svg>';
+}
+
+function badges() {
+  const st = stats(S.sessions);
+  let h = `<h1>Lencana</h1><div class="lvbig"><span class="n">${st.level}</span><div class="grow"><b>LEVEL ${st.level}</b>
+    <div class="bar" style="margin:6px 0"><i style="width:${Math.round(st.into / st.span * 100)}%"></i></div><div class="small">${num(st.span - st.into)} XP lagi · total ${num(st.xp)} XP</div></div></div>
+    <div class="stats"><div class="card"><b>${st.sessions}</b><small>workout</small></div><div class="card"><b>${num(st.kg)}</b><small>kg total</small></div><div class="card"><b>${st.prs}</b><small>rekor</small></div></div>
+    <h2>${st.badges.length} / ${BADGES.length} lencana</h2>
+    <div class="badges">${BADGES.map(b => { const ok = st.badges.includes(b.id); return `<div class="card badge${ok ? '' : ' lock'}"><span class="ic">${ok ? b.ic : '?'}</span><b>${b.name}</b><small>${b.desc}</small></div>`; }).join('')}</div>
+    <h2>Fakta terkumpul ${S.facts.length} / ${FACTS.length}</h2>
+    <div class="small muted">Fakta terbuka setiap kamu naik level, dapat lencana, atau memecahkan rekor.</div>
+    <div class="factlist">${S.facts.length ? S.facts.slice().reverse().map(i => `<div class="card"><small>FAKTA #${i + 1}</small>${esc(FACTS[i])}</div>`).join('') : '<div class="card small">Belum ada. Selesaikan workout pertamamu!</div>'}</div>
+    <div class="card small" style="margin-top:14px"><b>Cara dapat XP:</b> setiap set = 10 + repetisi + kg. Selesai workout +${XP_SESSION}. Setiap rekor baru +${XP_PR}.</div>`;
+  app.innerHTML = h;
 }
 
 function settings() {
-  const list = S.plan[editType];
-  const avail = [...Object.keys(EX), ...Object.keys(S.custom)].filter(id => !list.includes(id));
-  app.innerHTML = `<h1>Pengaturan</h1>
-    <h2>Timer istirahat</h2><div class="card row"><button id="rm">−15</button><div class="grow" style="text-align:center;font-size:22px;font-weight:700">${S.rest} detik</div><button id="rp">+15</button></div>
-    <h2>Daftar gerakan</h2><div class="seg">${Object.keys(TYPES).map(k => `<button data-k="${k}" class="${k === editType ? 'on' : ''}">${TYPES[k].name}</button>`).join('')}</div>
-    <div class="list-edit">${list.map((id, i) => `<div class="row"><div class="grow">${esc(exName(id))}</div>
-      <button data-up="${i}" ${i ? '' : 'disabled'}>↑</button><button data-dn="${i}" ${i < list.length - 1 ? '' : 'disabled'}>↓</button><button class="danger" data-rm="${i}">✕</button></div>`).join('')}</div>
-    ${avail.length ? `<div class="row" style="margin-top:8px"><select id="addSel" class="grow">${avail.map(id => `<option value="${esc(id)}">${esc(exName(id))}</option>`).join('')}</select><button id="add">Tambah</button></div>` : ''}
-    <div class="row" style="margin-top:8px"><input type="text" id="newName" class="grow" placeholder="Gerakan baru (nama sendiri)" maxlength="40"><button id="addNew">Buat</button></div>
-    <button class="ghost small" id="resetPlan">Kembalikan daftar ${TYPES[editType].name} ke bawaan</button>
-    <h2>Backup data</h2><div class="muted small">Data hanya tersimpan di iPhone ini. Backup rutin, simpan filenya ke Files/iCloud.</div>
-    <div class="row" style="margin-top:8px"><button class="grow" id="exp">Backup</button><button class="grow" id="imp">Restore</button></div>
+  const row = (id, label, v) => `<button id="${id}">${label}<span class="v">${v} ›</span></button>`;
+  app.innerHTML = `<h1>Atur</h1>
+    <div class="grouplbl">Latihan</div>
+    <div class="card group">${row('gTimer', 'Timer istirahat', S.rest + ' dtk')}</div>
+    <div class="grouplbl">Daftar gerakan</div>
+    <div class="card group">${Object.keys(TYPES).map(k => row('gP' + k, TYPES[k].name, S.plan[k].length + ' gerakan')).join('')}</div>
+    <div class="grouplbl">Data di iPhone ini</div>
+    <div class="card group">${row('exp', 'Backup data', '')}${row('imp', 'Restore dari backup', '')}</div>
     <input type="file" id="file" accept="application/json,.json" style="display:none">
-    <h2>Reset</h2><div class="muted small">Hapus semua sesi, daftar gerakan buatan sendiri, dan pengaturan. App kembali seperti baru dipasang.</div>
-    <button class="danger" style="width:100%;margin-top:8px" id="reset">Hapus semua data &amp; reset</button>
-    <div class="muted small" style="margin-top:24px;text-align:center">PPL Log · ${S.sessions.length} sesi tersimpan · berjalan offline</div>`;
-  const setRest = d => { S.rest = Math.min(300, Math.max(30, S.rest + d)); save(); render(); };
-  document.getElementById('rm').onclick = () => setRest(-15);
-  document.getElementById('rp').onclick = () => setRest(15);
-  app.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { editType = b.dataset.k; render(); });
+    <div class="small muted" style="margin:8px 2px">Data hanya tersimpan di iPhone ini. Backup rutin dan simpan filenya ke Files/iCloud.</div>
+    <div class="card group" style="margin-top:22px"><button id="reset" style="color:#d10045">Hapus semua data &amp; reset<span class="v">›</span></button></div>
+    <div class="small muted" style="text-align:center;margin-top:20px">PPL Log · ${S.sessions.length} sesi · berjalan offline</div>`;
+  document.getElementById('gTimer').onclick = () => go('timer');
+  Object.keys(TYPES).forEach(k => { document.getElementById('gP' + k).onclick = () => go('plan', k); });
+  document.getElementById('exp').onclick = backup;
+  const file = document.getElementById('file');
+  document.getElementById('imp').onclick = () => file.click();
+  file.onchange = () => {
+    const f = file.files[0]; if (!f) return;
+    f.text().then(txt => {
+      const d = JSON.parse(txt);
+      if (!d || !Array.isArray(d.sessions) || !d.plan) throw new Error('format');
+      if (!confirm(`Restore ${d.sessions.length} sesi dari backup? Data di iPhone ini sekarang akan diganti.`)) return;
+      S = {...fresh(), ...d}; save(); toast('Data berhasil dipulihkan'); render();
+    }).catch(() => alert('File ini bukan backup PPL Log yang valid.'));
+    file.value = '';
+  };
+  document.getElementById('reset').onclick = () => {
+    if (!confirm(`Hapus SEMUA data (${S.sessions.length} sesi, XP, lencana, fakta, daftar gerakan, pengaturan)? Tidak bisa dibatalkan. Lakukan Backup dulu kalau masih perlu.`)) return;
+    if (!confirm('Yakin? Ini terakhir kali ditanya.')) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    S = fresh(); lastResult = null; progEx = null; histY = null; tickRest();
+    toast('Data direset. App kembali ke kondisi awal.'); go('home');
+  };
+}
+
+function timer() {
+  app.innerHTML = `<h1>Timer istirahat</h1><div class="small muted">Berjalan otomatis setelah kamu menyelesaikan set.</div>
+    <div class="card" style="margin-top:16px;text-align:center"><div style="font:400 64px/1 var(--display)">${S.rest}</div><div class="small">detik</div>
+    <div class="row" style="margin-top:14px"><button class="grow" id="rm">−15</button><button class="grow" id="rp">+15</button></div></div>
+    <div class="small muted" style="margin-top:10px">Antara 30 dan 300 detik.</div>`;
+  const set = d => { S.rest = clamp(S.rest + d, 30, 300); save(); render(); };
+  document.getElementById('rm').onclick = () => set(-15);
+  document.getElementById('rp').onclick = () => set(15);
+}
+
+function plan() {
+  const list = S.plan[editType], avail = [...Object.keys(EX), ...Object.keys(S.custom)].filter(id => !list.includes(id));
+  app.innerHTML = `<h1>Gerakan ${TYPES[editType].name}</h1><div class="small muted">Urutan di sini menjadi urutan saat workout.</div>
+    <div class="list-edit">${list.map((id, i) => `<div class="card row"><span class="grow">${esc(exName(id))}</span>
+      <button data-up="${i}" ${i ? '' : 'disabled'} aria-label="Naikkan">↑</button><button data-dn="${i}" ${i < list.length - 1 ? '' : 'disabled'} aria-label="Turunkan">↓</button><button class="danger" data-rm="${i}" aria-label="Hapus">✕</button></div>`).join('')}</div>
+    ${avail.length ? `<label class="lb" for="addSel">Tambah dari daftar</label><div class="row"><select id="addSel" class="grow">${avail.map(id => `<option value="${esc(id)}">${esc(exName(id))}</option>`).join('')}</select><button id="add">Tambah</button></div>` : ''}
+    <label class="lb" for="newName">Gerakan buatan sendiri</label><div class="row"><input type="text" id="newName" class="grow" placeholder="Nama gerakan" maxlength="40"><button id="addNew">Buat</button></div>
+    <button class="ghost" style="margin-top:14px" id="resetPlan">Kembalikan daftar ${TYPES[editType].name} ke bawaan</button>`;
   const mv = (i, d) => { [list[i], list[i + d]] = [list[i + d], list[i]]; save(); render(); };
   app.querySelectorAll('[data-up]').forEach(b => b.onclick = () => mv(+b.dataset.up, -1));
   app.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => mv(+b.dataset.dn, 1));
@@ -741,27 +1049,8 @@ function settings() {
     if (!confirm(`Kembalikan daftar ${TYPES[editType].name} ke bawaan?`)) return;
     S.plan[editType] = [...DEFAULT_PLAN[editType]]; save(); render();
   };
-  document.getElementById('reset').onclick = () => {
-    if (!confirm(`Hapus SEMUA data (${S.sessions.length} sesi, daftar gerakan, pengaturan)? Tidak bisa dibatalkan. Lakukan Backup dulu kalau masih perlu.`)) return;
-    if (!confirm('Yakin? Ini terakhir kali ditanya.')) return;
-    try { localStorage.removeItem(KEY); } catch (e) {}
-    S = fresh(); lastResult = null; editType = 'push'; progEx = null; tickRest();
-    toast('Data direset. App kembali ke kondisi awal.'); go('home');
-  };
-  document.getElementById('exp').onclick = backup;
-  const file = document.getElementById('file');
-  document.getElementById('imp').onclick = () => file.click();
-  file.onchange = () => {
-    const f = file.files[0]; if (!f) return;
-    f.text().then(txt => {
-      const d = JSON.parse(txt);
-      if (!d || !Array.isArray(d.sessions) || !d.plan) throw new Error('format');
-      if (!confirm(`Restore ${d.sessions.length} sesi dari backup? Data di iPhone ini sekarang akan diganti.`)) return;
-      S = {...fresh(), ...d}; save(); toast('Data berhasil dipulihkan'); render();
-    }).catch(() => alert('File ini bukan backup PPL Log yang valid.'));
-    file.value = '';
-  };
 }
+
 async function backup() {
   const name = 'ppllog-backup-' + new Date().toISOString().slice(0, 10) + '.json';
   const blob = new Blob([JSON.stringify(S)], {type: 'application/json'});
@@ -774,6 +1063,7 @@ async function backup() {
 }
 
 render();
+tickRest();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
   navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'update') document.body.classList.add('hasUpd'); });

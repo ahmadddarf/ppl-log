@@ -1,7 +1,7 @@
 // Offline cache: serve the cached app instantly, refresh the cache in the background when online.
 // When the fresh copy differs from the cached one, tell open pages so they can offer a reload.
-const CACHE = 'ppllog-v3';
-const FILES = ['./index.html', './manifest.json', './icon-180.png', './icon-512.png'];
+const CACHE = 'ppllog-v4';
+const FILES = ['./index.html', './manifest.json', './icon-180.png', './icon-512.png', './fonts/archivo-black-400.woff2', './fonts/ibm-plex-mono-400.woff2', './fonts/ibm-plex-mono-700.woff2'];
 const stamp = r => r.headers.get('etag') || r.headers.get('last-modified');
 
 self.addEventListener('install', e => {

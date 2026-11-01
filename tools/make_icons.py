@@ -1,10 +1,10 @@
-"""Generate icon-180.png and icon-512.png (dumbbell on dark background) with the standard library only."""
+"""Generate icon-180.png and icon-512.png (black dumbbell on yellow background) with the standard library only."""
 import struct
 import zlib
 from pathlib import Path
 
-BG = (15, 17, 21)
-FG = (255, 122, 61)
+BG = (255, 225, 77)
+FG = (0, 0, 0)
 
 # Shapes in a 0..1 unit square: (x0, y0, x1, y1, corner radius)
 RECTS = [
